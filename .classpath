@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry kind="lib" path="E:/Kannada Trainer/Kannada4Android/JJIL-12-22-08.jar"/>
+	<classpathentry kind="lib" path="JJIL-12-22-08.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
