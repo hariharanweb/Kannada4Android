@@ -6,8 +6,7 @@
 	<TextView android:layout_width="fill_parent"
 		android:layout_height="wrap_content" android:text="@string/trainingNetwork" />
 
-
-
 	<Button android:text="@string/ContinueButton" android:id="@+id/ContinueButton"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:visibility="invisible"></Button>
 </LinearLayout>

@@ -15,8 +15,12 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer{
 	
 	@Override
 	public void trainNetwork() {
-		// TODO Auto-generated method stub
-		
+		//some heavy process here takes time....
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
