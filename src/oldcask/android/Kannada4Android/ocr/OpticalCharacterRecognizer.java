@@ -8,13 +8,12 @@ import java.util.ArrayList;
 
 import jjil.core.RgbImage;
 import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
-import android.R;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
-	public static final int DHEIGHT = 10;
-	public static final int DWIDTH = 10;
+	public static final int DHEIGHT = 20;
+	public static final int DWIDTH = 20;
 	int MAX_QUALITY = 100;
 	private ArrayList<SampleData> sampleDataList = new ArrayList<SampleData>();
 	private KohonenNetwork net;
@@ -87,9 +86,9 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	}
 
 	@Override
-	public void recognize(byte[] jpegData) {
+	public String recognize(byte[] jpegData) {
 		try {
-			FileInputStream fis = new FileInputStream("data/img02.jpg");
+			FileInputStream fis = new FileInputStream("data/img01.jpg");
 			jpegData = new byte[100000];
 			fis.read(jpegData);
 
@@ -99,8 +98,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 
 			RemoveNoise removeNoise = new RemoveNoise(img);
 			RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
-			RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,
-					"data/noiseremoved.jpg");
+			//RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,"data/noiseremoved.jpg");
 			System.out.println("Noise Removal Done!!");
 
 			boolean[][] thresholdedBoolean = Threshold.threshold(
@@ -110,8 +108,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			RgbImage Perfect = actions.perfectImage();
 			Perfect = actions.makePerfect(Perfect, Threshold.threshold(Perfect,
 					0.71f, 0.15f));
-			RgbImageAndroid.toFile(null, Perfect, MAX_QUALITY,
-					"data/perfected.jpg");
+			//RgbImageAndroid.toFile(null, Perfect, MAX_QUALITY,"data/perfected.jpg");
 			System.out
 					.println("*************Perfect Done and printed *************");
 
@@ -131,11 +128,61 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			Splitter.segment(Half, PicQueue);
 
 			System.out.println("Ze Queue Holds " + PicQueue.getSize());
+			
+			 double input[] = new double[DWIDTH * DHEIGHT];
+		        String Mapped[] = mapNeurons();
+		        String characters[] = new String[100];
+		        int x;
+		       for (x = 0; x < PicQueue.getSize(); x++) {
+					int idx = 0;
+					boolean FromQueue[][] = PicQueue.getArray(x);
+					for (int i = 0; i < FromQueue.length; i++) {
+						for (int j = 0; j < FromQueue[0].length; j++) {
+							input[idx++] = (FromQueue[i][j] == true) ? .5 : -.5;
+						}
+					}
 
+					double normfac[] = new double[1];
+					double synth[] = new double[1];
+
+					int best = net.winner(input, normfac, synth);
+					System.out.println(best + "  " + Mapped[best]);
+					characters[x] = Mapped[best];
+		        }
+		        StringBuilder recogchar = new StringBuilder();
+		        for (int i=0;i<x;i++){
+		            recogchar.append(characters[i]);
+		        }
+		       System.out.println(recogchar.toString());
+		       return recogchar.toString();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return "Somethings gone a bit wrong";
 	}
+	String[] mapNeurons() {
+        String map[] = new String[sampleDataList.size()];
+        double normfac[] = new double[1];
+        double synth[] = new double[1];
+
+        for (int i = 0; i < map.length; i++) {
+            map[i] = "?";
+        }
+        for (int i = 0; i < sampleDataList.size(); i++) {
+            double input[] = new double[DWIDTH * DHEIGHT];
+            int idx = 0;
+            SampleData ds = (SampleData) sampleDataList.get(i);
+            for (int y = 0; y < ds.getHeight(); y++) {
+                for (int x = 0; x < ds.getWidth(); x++) {
+                    input[idx++] = ds.getData(x, y) ? .5 : -.5;
+                }
+            }
+
+            int best = net.winner(input, normfac, synth);
+            map[best] = ds.getLetters();
+        }
+        return map;
+    }
 
 }

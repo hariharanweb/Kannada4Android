@@ -25,7 +25,7 @@ public class Kannada4Android extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         makeText = Toast.makeText(this, "Somethings koool going to happen when u click...", Toast.LENGTH_LONG);
-        setContentView(R.layout.main);
+        setContentView(R.layout.main);        
         trainTheNetwork();
     }
 
@@ -39,7 +39,9 @@ public class Kannada4Android extends Activity {
 		continueButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				makeText.show();
+				String recognizedCharacter = ocr.recognize(null);
+				makeText.setText("Hurray "+recognizedCharacter);
+				makeText.show();				
 			}
 		});
 		

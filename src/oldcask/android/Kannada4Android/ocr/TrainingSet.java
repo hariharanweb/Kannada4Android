@@ -1,7 +1,5 @@
 package oldcask.android.Kannada4Android.ocr;
 
-import java.io.*;
-import java.util.*;
 
 /**
  * Java Neural Network Example

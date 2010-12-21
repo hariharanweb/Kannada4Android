@@ -109,12 +109,12 @@ public class Threshold {
 		
 		
 		System.out.println(" Thresholding done!!");
-		try {
+		/*try {
 			RgbImageAndroid.toFile(null, RgbImageAndroid.toRgbImage(tempBitmapImage), 100, "data/thresholded1.jpg");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		
 		return thresholdedImage;
