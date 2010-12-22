@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent">
+
+	<SurfaceView android:id="@+id/cameraSurface"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+	</SurfaceView>
+
+	<Button android:text="@+id/TakePicture" android:id="@+id/TakePicture"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
+</LinearLayout>
