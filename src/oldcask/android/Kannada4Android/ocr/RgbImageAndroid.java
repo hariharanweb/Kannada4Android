@@ -44,12 +44,6 @@ public class RgbImageAndroid  {
     			Bitmap.Config.ARGB_8888);
     }
     
-    static public void toDisplay(Context context, RgbImage rgb) 
-    {
-    	Bitmap bmp = toBitmap(rgb);
-    	
-    }
-    
     static public void toFile(Context context, RgbImage rgb, int nQuality, String szPath) 
     	throws IOException
     {
