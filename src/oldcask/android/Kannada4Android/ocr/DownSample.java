@@ -5,9 +5,9 @@ import jjil.core.RgbImage;
 
 public class DownSample {
 
-	static final int HGT = OpticalCharacterRecognizer.DHEIGHT;
+	static final int HGT = OpticalCharacterRecognizer.DOWNSAMPLE_HEIGHT;
 
-	static final int WDT = OpticalCharacterRecognizer.DWIDTH;
+	static final int WDT = OpticalCharacterRecognizer.DOWNSAMPLE_WIDTH;
 	
 
 	/**
