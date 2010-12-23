@@ -27,7 +27,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	int MAX_QUALITY = 100;
 	
 	@Override
-	public void trainNetwork() {
+	public void trainNeuralNetwork() {
 		loadTrainingDataFromFile();
 		trainKohonenNeuralNetwork();
 
@@ -104,23 +104,21 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	}
 
 	@Override
-	public String recognize(byte[] jpegData) {
+	public String recogniseImage(byte[] jpegData) {
 		try {
 
 			/*
 			 * The following 3 lines will be removed..
 			 */
-			FileInputStream fis = new FileInputStream("data/img01.jpg");
+			FileInputStream fis = new FileInputStream("data/img02.jpg");
 			jpegData = new byte[100000];
 			fis.read(jpegData);
 
-			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
-					.decodeByteArray(jpegData, 0, jpegData.length));
+			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length));
 
 			RemoveNoise removeNoise = new RemoveNoise(inputImage);
 			RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
-			// RgbImageAndroid.toFile(null, noiseremovedImage,
-			// MAX_QUALITY,"data/noiseremoved.jpg");
+			RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,"data/noiseremoved.jpg");
 			System.out.println("Noise Removal Done!!");
 
 			boolean[][] thresholdedBoolean = Threshold.threshold(
@@ -179,7 +177,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			System.out.println(recogchar.toString());
 			return recogchar.toString();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		}
 		return "Somethings gone a bit wrong";

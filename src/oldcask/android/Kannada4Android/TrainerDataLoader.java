@@ -13,7 +13,7 @@ public final class TrainerDataLoader extends
 	}
 	
 	protected Integer doInBackground(IOpticalCharacterRecognizer... ocr) {
-		ocr[0].trainNetwork();
+		ocr[0].trainNeuralNetwork();
 		return null;
 	}
 	
