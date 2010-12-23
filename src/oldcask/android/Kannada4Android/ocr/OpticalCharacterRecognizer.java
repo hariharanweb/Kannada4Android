@@ -8,6 +8,9 @@ import java.util.ArrayList;
 
 import jjil.core.RgbImage;
 import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
+import oldcask.android.Kannda4Android.ocr.NeuralNetwork.KohonenNetwork;
+import oldcask.android.Kannda4Android.ocr.NeuralNetwork.SampleData;
+import oldcask.android.Kannda4Android.ocr.NeuralNetwork.TrainingSet;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -88,15 +91,18 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	@Override
 	public String recognize(byte[] jpegData) {
 		try {
+			
+			/*
+			 * The following 3 lines will be removed..
+			 */
 			FileInputStream fis = new FileInputStream("data/img01.jpg");
 			jpegData = new byte[100000];
 			fis.read(jpegData);
 
-			Bitmap bitmap = BitmapFactory.decodeByteArray(jpegData, 0,
-					jpegData.length);
-			RgbImage img = RgbImageAndroid.toRgbImage(bitmap);
+			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory.decodeByteArray(jpegData, 0,
+					jpegData.length));
 
-			RemoveNoise removeNoise = new RemoveNoise(img);
+			RemoveNoise removeNoise = new RemoveNoise(inputImage);
 			RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
 			//RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,"data/noiseremoved.jpg");
 			System.out.println("Noise Removal Done!!");
@@ -180,7 +186,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
             }
 
             int best = net.winner(input, normfac, synth);
-            map[best] = ds.getLetters();
+            map[best] = ds.getCharacters();
         }
         return map;
     }
