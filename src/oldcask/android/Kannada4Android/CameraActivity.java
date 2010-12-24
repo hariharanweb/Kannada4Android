@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.widget.Button;
 
 public class CameraActivity extends Activity implements SurfaceHolder.Callback{
 
@@ -18,6 +20,17 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.camera);
+		setUpSurface();
+		Button takePicButton = (Button) findViewById(R.id.TakePicture);
+		takePicButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				
+			}
+		});
+		
+	}
+
+	private void setUpSurface() {
 		SurfaceView cameraSurface = (SurfaceView) findViewById(R.id.cameraSurface);
 		SurfaceHolder surfaceHolder = cameraSurface.getHolder();
 		surfaceHolder.addCallback(this);
