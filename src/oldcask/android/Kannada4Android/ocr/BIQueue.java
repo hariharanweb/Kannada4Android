@@ -70,7 +70,7 @@ public class BIQueue {
 			ttemp = new boolean[TMP.getHeight()][TMP.getWidth()];
 			ttemp = Threshold.threshold(TMP, 0.999f, 0.001f);
 
-			Actions.Print(ttemp);
+			Localisation.Print(ttemp);
 
 			Ti.add(TMP);
 		} else {
@@ -148,7 +148,7 @@ public class BIQueue {
 			return false;
 
 		for (int i = 0; i < TMP.getHeight(); i++) {
-			if (HistAnl.getStrengthH(t, i, 0, TMP.getWidth()) == 0)
+			if (HistogramAnalysis.getStrengthH(t, i, 0, TMP.getWidth()) == 0)
 				return false;
 		}
 		return true;

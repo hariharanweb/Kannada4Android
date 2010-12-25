@@ -75,7 +75,7 @@ public class DownSample {
 		int str = 0;
 		for (int j = 0; j <= Math.ceil(wi); j++)
 			if ((j + y * wi) < t[0].length)
-				str += HistAnl.getStrengthV(t, ((int) Math.floor(x * hi)),
+				str += HistogramAnalysis.getStrengthV(t, ((int) Math.floor(x * hi)),
 						((int) Math.floor(j + y * wi)), ((int) Math.ceil(hi)));
 		if (str >= 2)
 			return true;

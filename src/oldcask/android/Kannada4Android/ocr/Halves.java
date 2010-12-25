@@ -12,7 +12,7 @@ public class Halves {
 	RgbImage Half[] = new RgbImage[2];
 
 	/**
-	 * Stores the number of rows the Number Plate has been printed in. Is always
+	 * Stores the number of rows the Image has been printed in. Is always
 	 * 0,1 or 2
 	 */
 	int ActHalf;
@@ -34,15 +34,15 @@ public class Halves {
 
 	/**
 	 * @param SplitPoint
-	 *            The Y position where the number plate has to be split. If the
-	 *            HSplit class has determined that the Number Plate has been
+	 *            The Y position where the Image has to be split. If the
+	 *            HSplit class has determined that the Image has been
 	 *            printed in one row, it returns the SplitPoint equal to the
 	 *            height (h-1) of the image
 	 * 
 	 * @param input
 	 *            The Candidate Image
 	 * 
-	 * @return The one/two halves of the Number Plates. Both halves will be the
+	 * @return The one/two halves of the Image. Both halves will be the
 	 *         same if the SpliPoint is equal to the height.
 	 */
 	public RgbImage[] makeSplit(int SplitPoint, RgbImage input) {
@@ -76,10 +76,10 @@ public class Halves {
 
 	/**
 	 * @param inputs
-	 *            The BufferedImage array, the halves, split by the MakeSplit
+	 *            The RgbImage array, the halves, split by the MakeSplit
 	 *            method
 	 * 
-	 * @return Determines and returns the Number of rows the Number Plate has
+	 * @return Determines and returns the Number of rows the Image has
 	 *         been printed in.
 	 */
 	public int checkGood(RgbImage inputs[]) {
@@ -97,9 +97,9 @@ public class Halves {
 		}
 		// System.out.println(GoodCount);
 		while (GoodCount == 0 && trialCount < 3) {
-			Actions Act = new Actions(inputs[0], Threshold.threshold(
+			Localisation Act = new Localisation(inputs[0], Threshold.threshold(
 					inputs[0], 0.70f, 0.10f));
-			Half[0] = Act.perfectImage();
+			Half[0] = Act.localiseImageByWidth();
 			ratio = Threshold.threshold(Half[0]);
 			if (ratio < 0.56f && Half[0].getHeight() > 5)
 				GoodCount++;
@@ -111,14 +111,14 @@ public class Halves {
 	}
 
 	/**
-	 * @return The number of rows in which the Number Plate has been printed.
+	 * @return The number of rows in which the Image has been printed.
 	 */
 	public int getValidCount() {
 		return ActHalf;
 	}
 
 	/**
-	 * @return the BufferedImage array Halves, either 1 or 2.
+	 * @return the RgbImage array Halves, either 1 or 2.
 	 */
 	public RgbImage[] getHalves() {
 		return Half;

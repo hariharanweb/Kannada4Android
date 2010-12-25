@@ -94,7 +94,7 @@ public class Hilditch {
 	int findUBound(boolean t[][], int w, int h) {
 		int top = 0;
 		while (top < h
-				&& (HistAnl.getStrengthH(t, top, 0, w) == 0 || HistAnl
+				&& (HistogramAnalysis.getStrengthH(t, top, 0, w) == 0 || HistogramAnalysis
 						.getStrengthH(t, top, 0, w) == w)) {
 			top++;
 		}
@@ -116,7 +116,7 @@ public class Hilditch {
 	int findBBound(boolean t[][], int w, int h) {
 		int bot = h - 1;
 		while (bot > 0
-				&& (HistAnl.getStrengthH(t, bot, 0, w) == 0 || HistAnl
+				&& (HistogramAnalysis.getStrengthH(t, bot, 0, w) == 0 || HistogramAnalysis
 						.getStrengthH(t, bot, 0, w) == w)) {
 			bot--;
 		}
@@ -137,7 +137,7 @@ public class Hilditch {
 	 */
 	int findLBound(boolean t[][], int w, int h) {
 		int lft = 0;
-		while (lft < w && HistAnl.getStrengthV(t, 0, lft, h) == 0) {
+		while (lft < w && HistogramAnalysis.getStrengthV(t, 0, lft, h) == 0) {
 			lft++;
 		}
 		return lft;
@@ -157,7 +157,7 @@ public class Hilditch {
 	 */
 	int findRBound(boolean t[][], int w, int h) {
 		int rgt = w - 1;
-		while (rgt > 0 && HistAnl.getStrengthV(t, 0, rgt, h) == 0) {
+		while (rgt > 0 && HistogramAnalysis.getStrengthV(t, 0, rgt, h) == 0) {
 			rgt--;
 		}
 		return rgt;

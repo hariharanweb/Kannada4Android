@@ -28,11 +28,11 @@ public class RemoveNoise {
 	 */
 
 	public RgbImage doRemoveNoise() {
-		// float[] NoiseKernel = { 0.050f, 0.075f, 0.050f, 0.075f, 1.0f, 0.075f,
-		// 0.050f, 0.075f, 0.050f };
-
-		float[] NoiseKernel = { 0.050f, 0.075f, 0.075f, 0.075f, 0.6f, 0.050f,
-				0.075f, 0.075f, 0.075f };
+//		float[] NoiseKernel = { 0.050f, 0.075f, 0.075f, 0.075f, 0.6f, 0.050f,
+//				0.075f, 0.075f, 0.075f }; ** This kernel gives me an brightened image
+		
+		float[] NoiseKernel = { 0.050f, 0.075f, 0.050f, 0.075f, 0.1f, 0.075f,
+				0.050f, 0.075f, 0.050f };
 
 		RgbImage inputRgbImage = (RgbImage) imageToRemoveNoise.clone();
 		

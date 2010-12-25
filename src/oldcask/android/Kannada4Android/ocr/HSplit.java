@@ -7,28 +7,28 @@ import jjil.core.Error;
 import jjil.core.RgbImage;
 
 public class HSplit {
-	private static final int MYTHRESHOLDPARAM = 120;
+	private static final int MYTHRESHOLDPARAM = 139;
 
 	int Strength[];
 
-	int h, w;
+	int height, width;
 
 	static int pcount = 1;
 
 	/**
 	 * 
 	 * @param input
-	 *            The input BufferedImage on which the operations will be done
-	 * @param t
+	 *            The input RgbImage on which the operations will be done
+	 * @param inputBoolean
 	 *            Boolean representation of the thresholded version of the input
 	 *            image
 	 */
-	public HSplit(RgbImage input, boolean t[][]) {
-		h = input.getHeight();
-		w = input.getWidth();
-		Strength = new int[h];
-		for (int i = 0; i < h; i++) {
-			Strength[i] = HistAnl.getStrengthH(t, i, 0, w);
+	public HSplit(RgbImage input, boolean inputBoolean[][]) {
+		height = input.getHeight();
+		width = input.getWidth();
+		Strength = new int[height];
+		for (int i = 0; i < height; i++) {
+			Strength[i] = HistogramAnalysis.getStrengthH(inputBoolean, i, 0, width);
 		}
 	}
 
@@ -42,7 +42,7 @@ public class HSplit {
 	 *            The Queue into which the segemts are inserted
 	 */
 	public void segment(Halves H, BIQueue PicQueue) {
-		int Strength[] = new int[w], Lines[] = new int[w];
+		int Strength[] = new int[width], Lines[] = new int[width];
 		int from[] = new int[20];
 		int to[] = new int[20];
 		int width[] = new int[20];
@@ -61,7 +61,7 @@ public class HSplit {
 				e1.printStackTrace();
 			}
 			for (int j = 0; j < w; j++) {
-				Strength[j] = HistAnl.getStrengthV(t, 0, j, h);
+				Strength[j] = HistogramAnalysis.getStrengthV(t, 0, j, h);
 				if (Strength[j] < 0.08 * t.length)
 					Lines[count++] = j;
 
@@ -130,18 +130,17 @@ public class HSplit {
 	}
 
 	/**
-	 * Finds a split point on the candaidate image. The Number plate is printed
-	 * in two lines, it returns a value near half of the height of the image
+	 * Finds a split point on the image. For Images having 2 lines/Some random stuff with the text.
 	 * 
 	 * @return the SplitPoint.
 	 */
 	public int shouldSplit() {
-		if (Strength[h / 2] < 5)
-			return h / 2;
+		if (Strength[height / 2] < 5)
+			return height / 2;
 
 		boolean Split = false;
-		int j = h / 2;
-		while (!Split && j > h / 3) {
+		int j = height / 2;
+		while (!Split && j > height / 3) {
 			j--;
 			if (Strength[j] < 5)
 				Split = true;
@@ -150,8 +149,8 @@ public class HSplit {
 			return j;
 
 		Split = false;
-		j = h / 2;
-		while (!Split && j <= 2 * h / 3) {
+		j = height / 2;
+		while (!Split && j <= 2 * height / 3) {
 			j++;
 			if (Strength[j] < 5)
 				Split = true;
@@ -159,7 +158,7 @@ public class HSplit {
 		if (Split == true)
 			return j;
 
-		return (h - 1);
+		return (height - 1);
 	}
 
 }
