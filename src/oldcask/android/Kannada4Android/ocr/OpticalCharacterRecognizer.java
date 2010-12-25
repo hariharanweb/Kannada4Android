@@ -1,9 +1,8 @@
 package oldcask.android.Kannada4Android.ocr;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import jjil.core.RgbImage;
@@ -16,21 +15,19 @@ import android.util.Log;
 
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private static final String TAG_NAME = "OpticalCharacterRecogniser";
-	private static final String TRAINING_DATA_FILE = "data/characters.txt";
-	
+
 	public static final int DOWNSAMPLE_HEIGHT = 20;
 	public static final int DOWNSAMPLE_WIDTH = 20;
-	
+
 	private ArrayList<SampleData> downSampleDataList = new ArrayList<SampleData>();
 	private KohonenNetwork kohonenNeuralNetwork;
-	
-	int MAX_QUALITY = 100;
-	
-	@Override
-	public void trainNeuralNetwork() {
-		loadTrainingDataFromFile();
-		trainKohonenNeuralNetwork();
 
+	int MAX_QUALITY = 100;
+
+	@Override
+	public void trainNeuralNetwork(InputStream trainingData) {
+		loadTrainingDataFromFile(trainingData);
+		trainKohonenNeuralNetwork();
 	}
 
 	private void trainKohonenNeuralNetwork() {
@@ -46,7 +43,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			kohonenNeuralNetwork = new KohonenNetwork(inputNeuron, outputNeuron);
 			kohonenNeuralNetwork.setTrainingSet(set);
 			kohonenNeuralNetwork.learn();
-			
+
 			System.out.println("Training done!!!");
 		} catch (Exception e) {
 			Log.e(TAG_NAME, "Kohonen Neural Network Training Not Done Properly");
@@ -60,33 +57,41 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			SampleData sampleData = (SampleData) downSampleDataList.get(index);
 			for (int y = 0; y < sampleData.getHeight(); y++) {
 				for (int x = 0; x < sampleData.getWidth(); x++) {
-					set.setInput(index, idx++, sampleData.getData(x, y) ? .5 : -.5);
+					set.setInput(index, idx++, sampleData.getData(x, y) ? .5
+							: -.5);
 				}
 			}
 		}
 	}
 
-	private void loadTrainingDataFromFile() {
+	private void loadTrainingDataFromFile(InputStream trainingDataStream) {
 		try {
-			FileReader fileReader = new FileReader(new File(TRAINING_DATA_FILE));
-			BufferedReader bufferedReader = new BufferedReader(fileReader);
+			InputStreamReader streamReader = new InputStreamReader(
+					trainingDataStream);
+			BufferedReader bufferedReader = new BufferedReader(streamReader);
 			String lineInTheTrainingDataFile;
 
 			downSampleDataList.clear();
 
 			while ((lineInTheTrainingDataFile = bufferedReader.readLine()) != null) {
-				String[] characterPronunciationDownsampleDataArray = lineInTheTrainingDataFile.split(":");
-				SampleData sampleData = new SampleData(characterPronunciationDownsampleDataArray[0],DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
+				String[] characterPronunciationDownsampleDataArray = lineInTheTrainingDataFile
+						.split(":");
+				SampleData sampleData = new SampleData(
+						characterPronunciationDownsampleDataArray[0],
+						DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
 
-				System.out.println("Text" + characterPronunciationDownsampleDataArray[0] + ": characters : "
+				System.out.println("Text"
+						+ characterPronunciationDownsampleDataArray[0]
+						+ ": characters : "
 						+ characterPronunciationDownsampleDataArray[1]);
 
-				populateSampleData(characterPronunciationDownsampleDataArray, sampleData);
+				populateSampleData(characterPronunciationDownsampleDataArray,
+						sampleData);
 				downSampleDataList.add(sampleData);
 			}
 
 			bufferedReader.close();
-			fileReader.close();
+			streamReader.close();
 			System.out.println("Loaded from characters.txt file");
 		} catch (Exception e) {
 			Log.e(TAG_NAME, "Training Data File Not Found");
@@ -94,11 +99,13 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		}
 	}
 
-	private void populateSampleData(String[] characterPronunciationDownsampleDataArray, SampleData ds) {
+	private void populateSampleData(
+			String[] characterPronunciationDownsampleDataArray, SampleData ds) {
 		int idx = 0;
 		for (int y = 0; y < ds.getHeight(); y++) {
 			for (int x = 0; x < ds.getWidth(); x++) {
-				ds.setData(x, y, characterPronunciationDownsampleDataArray[1].charAt(idx++) == '1');
+				ds.setData(x, y, characterPronunciationDownsampleDataArray[1]
+						.charAt(idx++) == '1');
 			}
 		}
 	}
@@ -110,15 +117,17 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			/*
 			 * The following 3 lines will be removed..
 			 */
-			FileInputStream fis = new FileInputStream("data/img02.jpg");
+/*			FileInputStream fis = new FileInputStream("data/img02.jpg");
 			jpegData = new byte[100000];
 			fis.read(jpegData);
-
-			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length));
+*/
+			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
+					.decodeByteArray(jpegData, 0, jpegData.length));
 
 			RemoveNoise removeNoise = new RemoveNoise(inputImage);
 			RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
-			RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,"data/noiseremoved.jpg");
+			RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,
+					"data/noiseremoved.jpg");
 			System.out.println("Noise Removal Done!!");
 
 			boolean[][] thresholdedBoolean = Threshold.threshold(
@@ -126,8 +135,8 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 
 			Actions actions = new Actions(noiseremovedImage, thresholdedBoolean);
 			RgbImage Perfect = actions.perfectImage();
-			Perfect = actions.makePerfect(Perfect, Threshold.threshold(Perfect,
-					0.71f, 0.15f));
+			Perfect = actions.makePerfect(Perfect,
+					Threshold.threshold(Perfect, 0.71f, 0.15f));
 			// RgbImageAndroid.toFile(null, Perfect,
 			// MAX_QUALITY,"data/perfected.jpg");
 			System.out
@@ -183,7 +192,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return "Somethings gone a bit wrong";
 	}
 
-	String[] mapNeurons() {
+	private String[] mapNeurons() {
 		String map[] = new String[downSampleDataList.size()];
 		double normfac[] = new double[1];
 		double synth[] = new double[1];
@@ -206,5 +215,4 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		}
 		return map;
 	}
-
 }

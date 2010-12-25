@@ -59,7 +59,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 		camera = Camera.open();
 		Parameters cameraParameters = camera.getParameters();
 		cameraParameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
-
+		cameraParameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
 		try {
 			camera.setPreviewDisplay(holder);
 		} catch (IOException e) {

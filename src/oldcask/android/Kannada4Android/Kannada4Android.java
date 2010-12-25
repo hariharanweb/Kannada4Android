@@ -1,5 +1,7 @@
 package oldcask.android.Kannada4Android;
 
+import java.io.InputStream;
+
 import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
 import oldcask.android.Kannada4Android.interfaces.OpticalCharacterRecognizerFactory;
 import android.app.Activity;
@@ -28,8 +30,9 @@ public class Kannada4Android extends Activity {
 	}
 
 	private void trainTheNetwork() {
+		InputStream trainingData = getResources().openRawResource(R.raw.characters);
 		AsyncTask<IOpticalCharacterRecognizer, Integer, Integer> trainerTask = new TrainerDataLoader(
-				this);
+				this,trainingData);
 		trainerTask.execute(ocr);
 	}
 
