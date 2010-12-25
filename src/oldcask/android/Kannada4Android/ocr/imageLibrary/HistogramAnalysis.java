@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.imageLibrary;
 
 /**
  * A very basic class to aid in the ananlysis the histogram of a thresholded

@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.imageLibrary;
 
 import jjil.core.RgbImage;
 
@@ -20,7 +20,7 @@ public class Hilditch {
 	 * 
 	 * @return The padded array
 	 */
-	boolean[][] adjust(boolean sourceBoolean[][], boolean resultBoolean[][], int height, int width) {
+	public boolean[][] adjust(boolean sourceBoolean[][], boolean resultBoolean[][], int height, int width) {
 
 		for (int i = 0; i < width + 4; i++) {
 			resultBoolean[0][i] = false;
@@ -170,7 +170,7 @@ public class Hilditch {
 	 * 
 	 * @return Thinned BufferedImage
 	 */
-	RgbImage dothin(boolean sourceBoolean[][], int width, int height, int noOfLayers) {
+	public RgbImage dothin(boolean sourceBoolean[][], int width, int height, int noOfLayers) {
 		int a, b,c = 1, count = 1;
 		boolean temp[][] = new boolean[height - 4][width - 4];
 

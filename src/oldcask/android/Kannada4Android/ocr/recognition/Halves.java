@@ -1,5 +1,7 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.recognition;
 
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
+import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
 import jjil.algorithm.RgbCrop;
 import jjil.core.Error;
 import jjil.core.RgbImage;

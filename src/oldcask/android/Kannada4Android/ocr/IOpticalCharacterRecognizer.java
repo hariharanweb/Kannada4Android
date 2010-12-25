@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.interfaces;
+package oldcask.android.Kannada4Android.ocr;
 
 import java.io.InputStream;
 

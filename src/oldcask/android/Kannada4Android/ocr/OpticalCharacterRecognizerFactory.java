@@ -1,6 +1,5 @@
-package oldcask.android.Kannada4Android.interfaces;
+package oldcask.android.Kannada4Android.ocr;
 
-import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizer;
 
 public class OpticalCharacterRecognizerFactory {
 	private static IOpticalCharacterRecognizer ocr;

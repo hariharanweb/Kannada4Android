@@ -1,6 +1,6 @@
 package oldcask.android.Kannada4Android;
 
-import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
 import android.os.AsyncTask;
 
 final class OCRRecognizerTask extends AsyncTask<byte[], Integer, Integer> {

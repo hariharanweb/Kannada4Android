@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.imageLibrary;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;

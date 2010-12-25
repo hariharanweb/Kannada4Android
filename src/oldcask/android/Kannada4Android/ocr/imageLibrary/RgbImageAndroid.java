@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.imageLibrary;
 
 import java.io.File;
 import java.io.FileOutputStream;

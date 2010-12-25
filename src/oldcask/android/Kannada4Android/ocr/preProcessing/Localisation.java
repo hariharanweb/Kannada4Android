@@ -1,7 +1,10 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.preProcessing;
 
 import java.io.File;
 import java.io.PrintStream;
+
+import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 
 import android.util.Log;
 

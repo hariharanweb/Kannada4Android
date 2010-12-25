@@ -2,7 +2,7 @@ package oldcask.android.Kannada4Android;
 
 import java.io.InputStream;
 
-import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
 import android.os.AsyncTask;
 
 public final class TrainerDataLoader extends

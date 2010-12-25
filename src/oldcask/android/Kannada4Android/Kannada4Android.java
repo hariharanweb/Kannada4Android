@@ -2,8 +2,8 @@ package oldcask.android.Kannada4Android;
 
 import java.io.InputStream;
 
-import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
-import oldcask.android.Kannada4Android.interfaces.OpticalCharacterRecognizerFactory;
+import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizerFactory;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;

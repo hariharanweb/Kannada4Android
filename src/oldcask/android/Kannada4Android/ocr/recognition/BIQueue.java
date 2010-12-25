@@ -1,7 +1,11 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.recognition;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Hilditch;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
+import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
 
 import jjil.core.RgbImage;
 

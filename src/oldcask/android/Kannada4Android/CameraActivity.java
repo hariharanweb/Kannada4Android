@@ -2,8 +2,8 @@ package oldcask.android.Kannada4Android;
 
 import java.io.IOException;
 
-import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
-import oldcask.android.Kannada4Android.interfaces.OpticalCharacterRecognizerFactory;
+import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizerFactory;
 import android.app.Activity;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;

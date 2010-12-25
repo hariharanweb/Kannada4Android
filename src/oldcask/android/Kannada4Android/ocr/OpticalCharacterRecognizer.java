@@ -7,7 +7,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import jjil.core.RgbImage;
-import oldcask.android.Kannada4Android.interfaces.IOpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
+import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
+import oldcask.android.Kannada4Android.ocr.preProcessing.RemoveNoise;
+import oldcask.android.Kannada4Android.ocr.recognition.BIQueue;
+import oldcask.android.Kannada4Android.ocr.recognition.Segmentation;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.KohonenNetwork;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.SampleData;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.TrainingSet;
@@ -45,9 +50,10 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			kohonenNeuralNetwork = new KohonenNetwork(inputNeuron, outputNeuron);
 			kohonenNeuralNetwork.setTrainingSet(set);
 			kohonenNeuralNetwork.learn();
-
-			mappedStrings = mapNeurons();
 			System.out.println("Training done!!!");
+			
+			mappedStrings = mapNeurons();
+			System.out.println("Mapping done!!!");
 		} catch (Exception e) {
 			Log.e(TAG_NAME,	"Kohonen Neural Network Training Not Done Properly");
 			e.printStackTrace();
@@ -67,7 +73,6 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		}
 	}
 
-	
 	private String[] mapNeurons() {
 		String map[] = new String[downSampleDataList.size()];
 		double normfac[] = new double[1];

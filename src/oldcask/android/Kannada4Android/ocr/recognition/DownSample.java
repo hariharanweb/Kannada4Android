@@ -1,5 +1,7 @@
-package oldcask.android.Kannada4Android.ocr;
+package oldcask.android.Kannada4Android.ocr.recognition;
 
+import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
 import jjil.core.RgbImage;
 
 
