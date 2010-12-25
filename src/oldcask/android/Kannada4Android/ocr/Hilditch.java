@@ -6,44 +6,36 @@ import jjil.core.RgbImage;
 public class Hilditch {
 
 	/**
-	 * Empty constructor for the Hilditch Class
-	 * 
-	 */
-	Hilditch() {
-
-	}
-
-	/**
 	 * 
 	 * Adjust method pads the source boolean array with 2 rows of 'false' values
 	 * 
-	 * @param t1
+	 * @param sourceBoolean
 	 *            The source array
-	 * @param t
+	 * @param resultBoolean
 	 *            The bigger resulting array
-	 * @param h
+	 * @param height
 	 *            Height of the array (t1.length)
-	 * @param w
+	 * @param width
 	 *            Width of the array (t1[0].length)
 	 * 
 	 * @return The padded array
 	 */
-	boolean[][] adjust(boolean t1[][], boolean t[][], int h, int w) {
+	boolean[][] adjust(boolean sourceBoolean[][], boolean resultBoolean[][], int height, int width) {
 
-		for (int i = 0; i < w + 4; i++) {
-			t[0][i] = false;
-			t[h + 1][i] = false;
+		for (int i = 0; i < width + 4; i++) {
+			resultBoolean[0][i] = false;
+			resultBoolean[height + 1][i] = false;
 		}
 
-		for (int j = 0; j < h + 4; j++) {
-			t[j][0] = false;
-			t[j][w + 1] = false;
+		for (int j = 0; j < height + 4; j++) {
+			resultBoolean[j][0] = false;
+			resultBoolean[j][width + 1] = false;
 		}
 
-		for (int k = 0, ki = 2; k < h; k++, ki++)
-			for (int l = 0, li = 2; l < w; l++, li++)
-				t[ki][li] = t1[k][l];
-		return t;
+		for (int k = 0, ki = 2; k < height; k++, ki++)
+			for (int l = 0, li = 2; l < width; l++, li++)
+				resultBoolean[ki][li] = sourceBoolean[k][l];
+		return resultBoolean;
 	}
 
 	/**
@@ -167,32 +159,31 @@ public class Hilditch {
 	 * A direct implementation of the Hilditch algorithm for thinning.
 	 * Iteratively thins the image one layer at a time
 	 * 
-	 * @param t
-	 *            Source image
-	 * @param w
+	 * @param sourceBoolean
+	 *            Source image boolean
+	 * @param width
 	 *            Width of the image t[0].length
-	 * @param h
+	 * @param height
 	 *            Height of the image t.length
-	 * @param n
+	 * @param noOfLayers
 	 *            Number of layers to remove
 	 * 
 	 * @return Thinned BufferedImage
 	 */
-	RgbImage dothin(boolean t[][], int w, int h, int n) {
-		int a, b;
-		int c = 1, count = 1;
-		boolean temp[][] = new boolean[h - 4][w - 4];
+	RgbImage dothin(boolean sourceBoolean[][], int width, int height, int noOfLayers) {
+		int a, b,c = 1, count = 1;
+		boolean temp[][] = new boolean[height - 4][width - 4];
 
-		while (count < n) {
+		while (count < noOfLayers) {
 			count++;
-			for (int i = 2, i1 = 0; i1 < h - 4; i++, i1++) {
-				for (int j = 2, j1 = 0; j1 < w - 4; j++, j1++) {
+			for (int i = 2, i1 = 0; i1 < height - 4; i++, i1++) {
+				for (int j = 2, j1 = 0; j1 < width - 4; j++, j1++) {
 					c = 1;
 
-					if (t[i][j] == true) {
+					if (sourceBoolean[i][j] == true) {
 						temp[i1][j1] = true;
-						a = checka(t, i, j);
-						b = checkb(t, i, j);
+						a = checka(sourceBoolean, i, j);
+						b = checkb(sourceBoolean, i, j);
 						if (b >= 2 && b <= 6)
 							c *= 1;
 						else
@@ -203,16 +194,16 @@ public class Hilditch {
 						else
 							c *= 0; // System.out.print("2 ");//Condition 2
 
-						if (Threshold.val(t[i - 1][j]) * Threshold.val(t[i][j + 1])
-								* Threshold.val(t[i][j - 1]) == 0
-								|| checka(t, i - 1, j) != 1)
+						if (Threshold.val(sourceBoolean[i - 1][j]) * Threshold.val(sourceBoolean[i][j + 1])
+								* Threshold.val(sourceBoolean[i][j - 1]) == 0
+								|| checka(sourceBoolean, i - 1, j) != 1)
 							c *= 1; // } //Condition 3
 						else
 							c *= 0; // System.out.print("3 ");
 
-						if (Threshold.val(t[i - 1][j]) * Threshold.val(t[i][j + 1])
-								* Threshold.val(t[i + 1][j]) == 0
-								|| checka(t, i, j + 1) != 1)
+						if (Threshold.val(sourceBoolean[i - 1][j]) * Threshold.val(sourceBoolean[i][j + 1])
+								* Threshold.val(sourceBoolean[i + 1][j]) == 0
+								|| checka(sourceBoolean, i, j + 1) != 1)
 							c *= 1; // } //Condition 4
 						else
 							c *= 0; // System.out.print("4 ");
@@ -224,9 +215,9 @@ public class Hilditch {
 				}
 			}
 
-			for (int i = 2, i1 = 0; i1 < h - 4; i++, i1++)
-				for (int j = 2, j1 = 0; j1 < w - 4; j++, j1++) {
-					t[i][j] = temp[i1][j1];
+			for (int i = 2, i1 = 0; i1 < height - 4; i++, i1++)
+				for (int j = 2, j1 = 0; j1 < width - 4; j++, j1++) {
+					sourceBoolean[i][j] = temp[i1][j1];
 				}
 		}
 		checknCorrect(temp);
@@ -276,7 +267,7 @@ public class Hilditch {
 	 * @param j
 	 *            horizontal position of the pixel under consideration
 	 * 
-	 * @return Whether the comdition is satisfied
+	 * @return Whether the condition is satisfied
 	 */
 	int checkb(boolean t[][], int i, int j) {
 		int count = 0;
@@ -308,7 +299,7 @@ public class Hilditch {
 	 * @param j
 	 *            horizontal position of the pixel under consideration
 	 * 
-	 * @return Whether the comdition is satisfied
+	 * @return Whether the condition is satisfied
 	 */
 	int checka(boolean t[][], int i, int j) {
 		int count = 0;

@@ -10,7 +10,9 @@ import jjil.core.Error;
 import jjil.core.RgbImage;
 
 public class Localisation {
-	int Strength[];
+	private static final int MIN_NUMBER_OF_PIXELS_THRESHOLD = 5;
+	int horizontalStrength[];
+	int verticalStrength[];
 	RgbImage inputImage;
 	boolean[][] inputBoolean;
 	int height, width;
@@ -28,11 +30,15 @@ public class Localisation {
 		this.inputBoolean = inputBoolean;
 		height = inputImage.getHeight();
 		width = inputImage.getWidth();
-		Strength = new int[height];
+		horizontalStrength = new int[height];
+		verticalStrength = new int[width];
 		for (int i = 0; i < height; i++) {
-			Strength[i] = HistogramAnalysis.getStrengthH(inputBoolean, i, 0,
+			horizontalStrength[i] = HistogramAnalysis.getStrengthH(inputBoolean, i, 0,
 					width);
 		}
+		for (int i = 0; i < width; i++)
+			verticalStrength[i] = HistogramAnalysis.getStrengthV(
+					inputBoolean, 0, i, height);
 	}
 
 	/**
@@ -44,22 +50,12 @@ public class Localisation {
 
 	public RgbImage localiseImageByWidth() {
 
-		int height = inputImage.getHeight();
-		int width = inputImage.getWidth();
-
-		int verticalStrength[];
-
 		try {
-			verticalStrength = new int[width];
 			int leftEnd = 0, j = 1, rightEnd = width - 1;
 
-			for (int i = 0; i < width; i++)
-				verticalStrength[i] = HistogramAnalysis.getStrengthV(
-						inputBoolean, 0, i, height);
+			leftEnd = findLeftEnd(leftEnd, j);
 
-			leftEnd = findLeftEnd(height, width, verticalStrength, leftEnd, j);
-
-			rightEnd = findRightEnd(height, width, verticalStrength, rightEnd);
+			rightEnd = findRightEnd(rightEnd);
 
 			System.out.print("\n LEFT END" + leftEnd + " RIGHTEND" + rightEnd
 					+ "HEIGHT" + inputImage.getWidth());
@@ -81,18 +77,13 @@ public class Localisation {
 		return inputImage;
 	}
 
-	private int findRightEnd(int height, int width, int[] verticalStrength,
-			int rightEnd) {
-		int prev;
+	private int findRightEnd(int rightEnd) {
 		int j;
 		boolean found = false;
 		j = width - 1;
 		while (!found && j >= 0) {
-			prev = rightEnd;
 			rightEnd = j--;
-			if (j == width - 2)
-				prev = rightEnd;
-			if (Math.abs(verticalStrength[prev] - verticalStrength[rightEnd]) > 5)
+			if (verticalStrength[rightEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -100,16 +91,11 @@ public class Localisation {
 		return rightEnd;
 	}
 
-	private int findLeftEnd(int height, int width, int[] verticalStrength,
-			int leftEnd, int j) {
-		int prev;
+	private int findLeftEnd(int leftEnd, int j) {
 		boolean found = false;
 		while (!found && j < width) {
-			prev = leftEnd;
 			leftEnd = j++;
-			if (j == 1)
-				prev = leftEnd;
-			if (Math.abs(verticalStrength[prev] - verticalStrength[leftEnd]) >= 5)
+			if (verticalStrength[leftEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -130,8 +116,10 @@ public class Localisation {
 		height = inputImage.getHeight();
 		width = inputImage.getWidth();
 		for (int i = 0; i < height; i++) {
-			Strength[i] = HistogramAnalysis.getStrengthH(t, i, 0, width);
+			horizontalStrength[i] = HistogramAnalysis.getStrengthH(t, i, 0, width);
 		}
+		for (int i = 0; i < width; i++)
+			verticalStrength[i] = HistogramAnalysis.getStrengthV(t, 0, i, height);
 	}
 
 	/**
@@ -158,8 +146,7 @@ public class Localisation {
 					+ "HEIGHT" + imageToBeLocalised.getHeight() + "Width = "
 					+ imageToBeLocalised.getWidth());
 
-			RgbCrop croppedImage = new RgbCrop(0, topEnd, width - 1, (bottomEnd
-					- topEnd + 1));
+			RgbCrop croppedImage = new RgbCrop(0, topEnd, width - 1, (bottomEnd	- topEnd));
 			croppedImage.push(imageToBeLocalised);
 			if (!croppedImage.isEmpty())
 				imageToBeLocalised = (RgbImage) croppedImage.getFront();
@@ -182,7 +169,7 @@ public class Localisation {
 		j = height - 1;
 		while (!found & j >= (3 * height / 4)) {
 			bottomEnd = j--;
-			if (Strength[bottomEnd] <= 5)
+			if (horizontalStrength[bottomEnd] <= MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -194,7 +181,7 @@ public class Localisation {
 		boolean found = false;
 		while (!found & j < height) {
 			topEnd = j++;
-			if (Strength[topEnd] >= 5)
+			if (horizontalStrength[topEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)

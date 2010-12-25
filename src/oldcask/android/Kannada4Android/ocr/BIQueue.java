@@ -9,101 +9,77 @@ import jjil.core.RgbImage;
  * @author Source Code
  */
 public class BIQueue {
+	private static final int LAYERS_TO_THIN = 2;
+	private static final int MAX_CHARACTERS = 20;
+	List<RgbImage> segmentsList;
+	List<RgbImage> thinnedSegmentsList;
+	int validSegments;
+	Hilditch segmentThinner;
+	DownSample downSampler[];
 
-	/**
-	 * A Queue of BufferedImages, containing the segments of the Number Plate
-	 */
-	List<RgbImage> Bi;
-
-	/**
-	 * A Queue of BufferedImages, containing the thinned segemnts of the Number
-	 * Plates
-	 */
-	List<RgbImage> Ti;
-
-	/**
-	 * Number of valid segemnts obtained from the Number Plates
-	 */
-	int ElementCount;
-
-	/**
-	 * An object of the Hilditch class
-	 */
-	Hilditch Thinner;
-
-	/**
-	 * An object of the Downsampler class
-	 */
-	DownSample Sampler[];
-
-	/**
-	 * Constuctor of the BufferedImageQueue
-	 * 
-	 */
 	public BIQueue() {
-		Bi = new ArrayList<RgbImage>(20);
-		Ti = new ArrayList<RgbImage>(20);
-		ElementCount = 0;
-		Thinner = new Hilditch();
-		Sampler = new DownSample[20];
+		segmentsList = new ArrayList<RgbImage>(MAX_CHARACTERS);
+		thinnedSegmentsList = new ArrayList<RgbImage>(MAX_CHARACTERS);
+		validSegments = 0;
+		segmentThinner = new Hilditch();
+		downSampler = new DownSample[MAX_CHARACTERS];
 	}
 
 	/**
 	 * All segments are processed one by one and inserted into the Queues
 	 * 
-	 * @param inp
-	 *            A Segment of the Number Plate
+	 * @param inputSegment
+	 *            A Segment of the Image
 	 * 
-	 * @param temp
+	 * @param inputBoolean
 	 *            The boolean representation of the thresholded input image
 	 */
-	public void insert(RgbImage inp, boolean temp[][]) {
-		Bi.add(inp);
+	public void insert(RgbImage inputSegment, boolean inputBoolean[][]) {
+		segmentsList.add(inputSegment);
 
-		boolean ttemp[][] = new boolean[temp.length + 4][temp[0].length + 4];
-		Thinner.adjust(temp, ttemp, temp.length, temp[0].length);
+		boolean tempBoolean[][] = new boolean[inputBoolean.length + 4][inputBoolean[0].length + 4];
+		segmentThinner.adjust(inputBoolean, tempBoolean, inputBoolean.length, inputBoolean[0].length);
 
-		RgbImage TMP = Thinner.dothin(ttemp, ttemp[0].length,
-				ttemp.length, 3);
+		RgbImage TMP = segmentThinner.dothin(tempBoolean, tempBoolean[0].length,
+				tempBoolean.length, LAYERS_TO_THIN);
 
 		if (TMP != null) {
-			ttemp = new boolean[TMP.getHeight()][TMP.getWidth()];
-			ttemp = Threshold.threshold(TMP, 0.999f, 0.001f);
+			tempBoolean = new boolean[TMP.getHeight()][TMP.getWidth()];
+			tempBoolean = Threshold.threshold(TMP, 0.999f, 0.001f);
+			Localisation.Print(tempBoolean);
 
-			Localisation.Print(ttemp);
-
-			Ti.add(TMP);
+			thinnedSegmentsList.add(TMP);
 		} else {
-			Bi.remove(ElementCount);
+			segmentsList.remove(validSegments);
 			return;
 		}
-		Sampler[ElementCount] = new DownSample();
-		Sampler[ElementCount].DoDownSample(TMP, ttemp);
-		ElementCount++;
+		downSampler[validSegments] = new DownSample();
+		downSampler[validSegments].DoDownSample(TMP, tempBoolean);
+		validSegments++;
 	}
 
 	/**
-	 * Returns the nth element from the Bi Queue
+	 * Returns the nth element from the segmentsList Queue
 	 * 
 	 * @param index
-	 *            The index value of the segemnt required
+	 *            The index value of the segment required
 	 * 
-	 * @return The nth element of the Bi Queue
+	 * @return The nth element of the segmentsList Queue
 	 */
 	public RgbImage getPic(int index) {
-		return Bi.get(index);
+		return segmentsList.get(index);
 	}
 
 	/**
-	 * Returns the nth element from the Ti Queue
+	 * Returns the nth element from the thinnedSegmentsList Queue
 	 * 
 	 * @param index
 	 *            The index value of the Segment required
 	 * 
-	 * @return The nth element of the Ti Queue
+	 * @return The nth element of the thinnedSegmentsList Queue
 	 */
 	public RgbImage getThinPic(int index) {
-		return Ti.get(index);
+		return thinnedSegmentsList.get(index);
 	}
 
 	/**
@@ -115,7 +91,7 @@ public class BIQueue {
 	 * @return The nth Downsampled Segment
 	 */
 	public boolean[][] getArray(int index) {
-		return Sampler[index].getDownSampled();
+		return downSampler[index].getDownSampled();
 	}
 
 	/**
@@ -123,34 +99,6 @@ public class BIQueue {
 	 * @return The size of the Queue
 	 */
 	public int getSize() {
-		return ElementCount;
-	}
-
-	/**
-	 * A heuristic method to check if the segemnt contains a character
-	 * 
-	 * @param TMP
-	 *            The Segment
-	 * 
-	 * @param t
-	 *            Boolean representation of the Segment
-	 * 
-	 * @return true if it can possibly contrain a character. Else returns false
-	 */
-	private boolean checkValid(RgbImage TMP, boolean t[][]) {
-		if (TMP == null)
-			return false;
-
-		if (TMP.getHeight() < TMP.getWidth())
-			return false;
-
-		if (TMP.getHeight() < 10 && TMP.getWidth() < 10)
-			return false;
-
-		for (int i = 0; i < TMP.getHeight(); i++) {
-			if (HistogramAnalysis.getStrengthH(t, i, 0, TMP.getWidth()) == 0)
-				return false;
-		}
-		return true;
+		return validSegments;
 	}
 }

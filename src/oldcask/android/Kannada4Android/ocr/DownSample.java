@@ -5,38 +5,40 @@ import jjil.core.RgbImage;
 
 public class DownSample {
 
+	private static final int BOX_STRENGTH_NEEDED = 2;
+
 	static final int HGT = OpticalCharacterRecognizer.DOWNSAMPLE_HEIGHT;
 
 	static final int WDT = OpticalCharacterRecognizer.DOWNSAMPLE_WIDTH;
 	
 
 	/**
-	 * An array of 5x7 booleans. Each 2D array represents the downsampled
+	 * An array of HGT x WDT booleans. Each 2D array represents the downsampled
 	 * version of the characters on the Number Plate
 	 */
-	boolean DS[][];
+	boolean downSample[][];
 
 	/**
 	 * Empty constructor of the class
 	 * 
 	 */
 	public DownSample() {
-		DS = new boolean[HGT][WDT];
+		downSample = new boolean[HGT][WDT];
 	}
 
 	/**
 	 * Method that actually downsamples the input image
 	 * 
-	 * @param inp
-	 *            The input Segment of the Number Plate
+	 * @param inputSegment
+	 *            The input Segment of the Image
 	 * 
-	 * @param t
+	 * @param inputBoolean
 	 *            The boolean representation of the thresholded segemnt
 	 * 
 	 */
-	public void DoDownSample(RgbImage inp, boolean t[][]) {
-		double ratioY = (double) t.length / HGT;
-		double ratioX = (double) t[0].length / WDT;
+	public void DoDownSample(RgbImage inputSegment, boolean inputBoolean[][]) {
+		double ratioY = (double) inputBoolean.length / HGT;
+		double ratioX = (double) inputBoolean[0].length / WDT;
 
 		// System.out.println(t.length+" "+t[0].length+" "+ratioY+" "+ratioX+"
 		// "+(int)HGT+" "+(int)WDT);
@@ -44,8 +46,8 @@ public class DownSample {
 		for (int i = 0; i < (int) HGT; i++) {
 			System.out.print(i + "  ");
 			for (int j = 0; j < (int) WDT; j++) {
-				DS[i][j] = isBlack(i, j, ratioY, ratioX, t);
-				if (DS[i][j] == true)
+				downSample[i][j] = isBlack(i, j, ratioY, ratioX, inputBoolean);
+				if (downSample[i][j] == true)
 					System.out.print("#");
 				else
 					System.out.print(" ");
@@ -58,26 +60,26 @@ public class DownSample {
 	 * 
 	 * Method determines whether a box can be downsampled to a black dot
 	 * 
-	 * @param x
+	 * @param box_x
 	 *            specifies the box's starting x position
-	 * @param y
+	 * @param box_y
 	 *            specifies the box's starting y position
-	 * @param hi
+	 * @param box_height
 	 *            specifies the box's height
-	 * @param wi
+	 * @param box_width
 	 *            specifies the box's width
-	 * @param t
+	 * @param inputBoolean
 	 *            boolean representation of the thresholded original image
-	 * @return returns true if the box can be reduced to a blaack dot. Else
+	 * @return returns true if the box can be reduced to a black dot. Else
 	 *         returns false
 	 */
-	private boolean isBlack(int x, int y, double hi, double wi, boolean t[][]) {
+	private boolean isBlack(int box_x, int box_y, double box_height, double box_width, boolean inputBoolean[][]) {
 		int str = 0;
-		for (int j = 0; j <= Math.ceil(wi); j++)
-			if ((j + y * wi) < t[0].length)
-				str += HistogramAnalysis.getStrengthV(t, ((int) Math.floor(x * hi)),
-						((int) Math.floor(j + y * wi)), ((int) Math.ceil(hi)));
-		if (str >= 2)
+		for (int j = 0; j <= Math.ceil(box_width); j++)
+			if ((j + box_y * box_width) < inputBoolean[0].length)
+				str += HistogramAnalysis.getStrengthV(inputBoolean, ((int) Math.floor(box_x * box_height)),
+						((int) Math.floor(j + box_y * box_width)), ((int) Math.ceil(box_height)));
+		if (str >= BOX_STRENGTH_NEEDED)
 			return true;
 		else
 			return false;
@@ -88,7 +90,7 @@ public class DownSample {
 	 * @return Downsampled boolean representation
 	 */
 	public boolean[][] getDownSampled() {
-		return DS;
+		return downSample;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import jjil.core.RgbImage;
@@ -17,15 +18,16 @@ import android.util.Log;
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private static final String TAG_NAME = "OpticalCharacterRecogniser";
 	private static final String TRAINING_DATA_FILE = "data/characters.txt";
-	
+
 	public static final int DOWNSAMPLE_HEIGHT = 20;
 	public static final int DOWNSAMPLE_WIDTH = 20;
-	
+
 	private ArrayList<SampleData> downSampleDataList = new ArrayList<SampleData>();
 	private KohonenNetwork kohonenNeuralNetwork;
-	
+	String mappedStrings[];
+
 	int MAX_QUALITY = 100;
-	
+
 	@Override
 	public void trainNeuralNetwork() {
 		loadTrainingDataFromFile();
@@ -47,9 +49,10 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			kohonenNeuralNetwork.setTrainingSet(set);
 			kohonenNeuralNetwork.learn();
 			
+			mappedStrings = mapNeurons();
 			System.out.println("Training done!!!");
 		} catch (Exception e) {
-			Log.e(TAG_NAME, "Kohonen Neural Network Training Not Done Properly");
+			Log.e(TAG_NAME,	"Kohonen Neural Network Training Not Done Properly");
 			e.printStackTrace();
 		}
 	}
@@ -60,10 +63,35 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			SampleData sampleData = (SampleData) downSampleDataList.get(index);
 			for (int y = 0; y < sampleData.getHeight(); y++) {
 				for (int x = 0; x < sampleData.getWidth(); x++) {
-					set.setInput(index, idx++, sampleData.getData(x, y) ? .5 : -.5);
+					set.setInput(index, idx++, sampleData.getData(x, y) ? .5
+							: -.5);
 				}
 			}
 		}
+	}
+
+	private String[] mapNeurons() {
+		String map[] = new String[downSampleDataList.size()];
+		double normfac[] = new double[1];
+		double synth[] = new double[1];
+
+		for (int i = 0; i < map.length; i++) {
+			map[i] = "?";
+		}
+		for (int i = 0; i < downSampleDataList.size(); i++) {
+			double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
+			int idx = 0;
+			SampleData sampleData = (SampleData) downSampleDataList.get(i);
+			for (int y = 0; y < sampleData.getHeight(); y++) {
+				for (int x = 0; x < sampleData.getWidth(); x++) {
+					input[idx++] = sampleData.getData(x, y) ? .5 : -.5;
+				}
+			}
+
+			int best = kohonenNeuralNetwork.winner(input, normfac, synth);
+			map[best] = sampleData.getCharacters();
+		}
+		return map;
 	}
 
 	private void loadTrainingDataFromFile() {
@@ -75,13 +103,19 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			downSampleDataList.clear();
 
 			while ((lineInTheTrainingDataFile = bufferedReader.readLine()) != null) {
-				String[] characterPronunciationDownsampleDataArray = lineInTheTrainingDataFile.split(":");
-				SampleData sampleData = new SampleData(characterPronunciationDownsampleDataArray[0],DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
+				String[] characterPronunciationDownsampleDataArray = lineInTheTrainingDataFile
+						.split(":");
+				SampleData sampleData = new SampleData(
+						characterPronunciationDownsampleDataArray[0],
+						DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
 
-				System.out.println("Text" + characterPronunciationDownsampleDataArray[0] + ": characters : "
+				System.out.println("Text"
+						+ characterPronunciationDownsampleDataArray[0]
+						+ ": characters : "
 						+ characterPronunciationDownsampleDataArray[1]);
 
-				populateSampleData(characterPronunciationDownsampleDataArray, sampleData);
+				populateSampleData(characterPronunciationDownsampleDataArray,
+						sampleData);
 				downSampleDataList.add(sampleData);
 			}
 
@@ -94,11 +128,13 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		}
 	}
 
-	private void populateSampleData(String[] characterPronunciationDownsampleDataArray, SampleData ds) {
+	private void populateSampleData(
+			String[] characterPronunciationDownsampleDataArray, SampleData ds) {
 		int idx = 0;
 		for (int y = 0; y < ds.getHeight(); y++) {
 			for (int x = 0; x < ds.getWidth(); x++) {
-				ds.setData(x, y, characterPronunciationDownsampleDataArray[1].charAt(idx++) == '1');
+				ds.setData(x, y, characterPronunciationDownsampleDataArray[1]
+						.charAt(idx++) == '1');
 			}
 		}
 	}
@@ -114,92 +150,109 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			jpegData = new byte[100000];
 			fis.read(jpegData);
 
-			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length));
+			RgbImage noiseremovedImage = removeNoise(jpegData);
 
-			RemoveNoise removeNoise = new RemoveNoise(inputImage);
-			RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
-			RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,"data/noiseremoved.jpg");
-			System.out.println("Noise Removal Done!!");
+			boolean[][] noiseRemovedThresholdedBoolean = thresholdImage(noiseremovedImage);
 
-			boolean[][] noiseRemovedThresholdedBoolean = Threshold.threshold(noiseremovedImage, 0.75f, 0.15f);
-			RgbImageAndroid.toFile(null, Threshold.makeImage(noiseRemovedThresholdedBoolean), MAX_QUALITY,"data/thresholded1.jpg");
-			System.out.println("Thresholding Done after Noise Removal");
+			RgbImage localisedImage = localiseImage(noiseRemovedThresholdedBoolean);
+
+			BIQueue PicQueue = segmentImage(localisedImage);
+
+			StringBuilder recognisedString = recogniseStrings(PicQueue);
 			
-			Localisation actions = new Localisation(Threshold.makeImage(noiseRemovedThresholdedBoolean), noiseRemovedThresholdedBoolean);
-			RgbImage localisedImage = actions.localiseImageByWidth();
-			localisedImage = actions.localiseImageByHeight(localisedImage, Threshold.threshold(localisedImage,0.75f, 0.15f));
-			RgbImageAndroid.toFile(null, localisedImage, MAX_QUALITY,"data/perfected.jpg");
-			System.out.println("*************PLocalisation Done *************");
-
-			boolean localisedThresholdedBoolean[][] = Threshold.threshold(localisedImage,0.75f, 0.15f);
-			HSplit Splitter = new HSplit(Threshold.makeImage(localisedThresholdedBoolean), localisedThresholdedBoolean);
-			int SplitPoint = Splitter.shouldSplit();
-
-			Halves Half = new Halves(SplitPoint, localisedImage);
-			int halves = Half.getValidCount();
-
-			System.out.println("No of halves = " + halves);
-
-//			BIQueue PicQueue = new BIQueue();
-//			Splitter.segment(Half, PicQueue);
-//
-//			System.out.println("Ze Queue Holds " + PicQueue.getSize());
-//
-//			double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
-//			String Mapped[] = mapNeurons();
-//			String characters[] = new String[100];
-//			int x;
-//			for (x = 0; x < PicQueue.getSize(); x++) {
-//				int idx = 0;
-//				boolean FromQueue[][] = PicQueue.getArray(x);
-//				for (int i = 0; i < FromQueue.length; i++) {
-//					for (int j = 0; j < FromQueue[0].length; j++) {
-//						input[idx++] = (FromQueue[i][j] == true) ? .5 : -.5;
-//					}
-//				}
-//
-//				double normfac[] = new double[1];
-//				double synth[] = new double[1];
-//
-//				int best = kohonenNeuralNetwork.winner(input, normfac, synth);
-//				System.out.println(best + "  " + Mapped[best]);
-//				characters[x] = Mapped[best];
-//			}
-//			StringBuilder recogchar = new StringBuilder();
-//			for (int i = 0; i < x; i++) {
-//				recogchar.append(characters[i]);
-//			}
-//			System.out.println(recogchar.toString());
-//			return recogchar.toString();
+			System.out.println(recognisedString.toString());
+			
+			return recognisedString.toString();
 		} catch (Exception e) {
-
+			Log.e(TAG_NAME, "Recognise Image Spit an error "+e);
 			e.printStackTrace();
 		}
-		return "Somethings gone a bit wrong";
+		return "Sorry!! Somethings gone a bit wrong";
 	}
 
-	String[] mapNeurons() {
-		String map[] = new String[downSampleDataList.size()];
-		double normfac[] = new double[1];
-		double synth[] = new double[1];
-
-		for (int i = 0; i < map.length; i++) {
-			map[i] = "?";
-		}
-		for (int i = 0; i < downSampleDataList.size(); i++) {
-			double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
+	private StringBuilder recogniseStrings(BIQueue PicQueue) {
+		double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
+		String recognisedStrings[] = new String[20];
+		for (int x = 0; x < PicQueue.getSize(); x++) {
 			int idx = 0;
-			SampleData ds = (SampleData) downSampleDataList.get(i);
-			for (int y = 0; y < ds.getHeight(); y++) {
-				for (int x = 0; x < ds.getWidth(); x++) {
-					input[idx++] = ds.getData(x, y) ? .5 : -.5;
+			boolean FromQueue[][] = PicQueue.getArray(x);
+			for (int i = 0; i < FromQueue.length; i++) {
+				for (int j = 0; j < FromQueue[0].length; j++) {
+					input[idx++] = (FromQueue[i][j] == true) ? .5 : -.5;
 				}
 			}
 
+			double normfac[] = new double[1];
+			double synth[] = new double[1];
 			int best = kohonenNeuralNetwork.winner(input, normfac, synth);
-			map[best] = ds.getCharacters();
+			
+			System.out.println("Kohonen Says: " + best + "  " + mappedStrings[best]);
+			recognisedStrings[x] = mappedStrings[best];
 		}
-		return map;
+		StringBuilder finalRecognisedString = new StringBuilder();
+		for (int i = 0; i < recognisedStrings.length; i++) {
+			finalRecognisedString.append(recognisedStrings[i]);
+		}
+		return finalRecognisedString;
 	}
 
+	private BIQueue segmentImage(RgbImage localisedImage) {
+		boolean localisedThresholdedBoolean[][] = Threshold.threshold(
+				localisedImage, 0.75f, 0.15f);
+		RgbImage localisedThresholdedImage = Threshold
+				.makeImage(localisedThresholdedBoolean);
+		Segmentation Splitter = new Segmentation(localisedThresholdedImage,
+				localisedThresholdedBoolean);
+		/*
+		 * Code below will be needed for multiple lines recognition only
+		 */
+		// int SplitPoint = Splitter.shouldSplit();
+		//
+		// Halves Half = new Halves(SplitPoint, localisedImage);
+		// int halves = Half.getValidCount();
+		//
+		// System.out.println("No of halves = " + halves);
+
+		BIQueue PicQueue = new BIQueue();
+		Splitter.segment(PicQueue);
+
+		System.out.println("Ze Queue Holds " + PicQueue.getSize());
+		return PicQueue;
+	}
+
+	private RgbImage localiseImage(boolean[][] noiseRemovedThresholdedBoolean)
+			throws IOException {
+		Localisation actions = new Localisation(Threshold
+				.makeImage(noiseRemovedThresholdedBoolean),
+				noiseRemovedThresholdedBoolean);
+		RgbImage localisedImage = actions.localiseImageByWidth();
+		localisedImage = actions.localiseImageByHeight(localisedImage,
+				Threshold.threshold(localisedImage, 0.75f, 0.15f));
+		RgbImageAndroid.toFile(null, localisedImage, MAX_QUALITY,
+				"data/perfected.jpg");
+		System.out.println("*************Localisation Done *************");
+		return localisedImage;
+	}
+
+	private boolean[][] thresholdImage(RgbImage noiseremovedImage)
+			throws IOException {
+		boolean[][] noiseRemovedThresholdedBoolean = Threshold.threshold(
+				noiseremovedImage, 0.75f, 0.15f);
+		RgbImageAndroid.toFile(null, Threshold
+				.makeImage(noiseRemovedThresholdedBoolean), MAX_QUALITY,
+				"data/thresholded1.jpg");
+		System.out.println("Thresholding Done after Noise Removal");
+		return noiseRemovedThresholdedBoolean;
+	}
+
+	private RgbImage removeNoise(byte[] jpegData) throws IOException {
+		RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
+				.decodeByteArray(jpegData, 0, jpegData.length));
+		RemoveNoise removeNoise = new RemoveNoise(inputImage);
+		RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
+		RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,
+				"data/noiseremoved.jpg");
+		System.out.println("Noise Removal Done!!");
+		return noiseremovedImage;
+	}
 }

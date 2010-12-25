@@ -125,14 +125,7 @@ public class Threshold {
 		return blackPixelCount;
 	}
 
-	public static boolean[][] threshold(RgbImage inputImageToThreshold,
-			float upperLimit, float lowerLimit, int THRESHOLD) {
-		MYTHRESHOLD = THRESHOLD;
-		return threshold(inputImageToThreshold, upperLimit, lowerLimit); // under test
-	}
-
 	public static float threshold(RgbImage image) {
-
 		int height = image.getHeight();
 		int width = image.getWidth();
 		int x, blackPixelCount = 0;
