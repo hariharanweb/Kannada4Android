@@ -2,14 +2,12 @@ package oldcask.android.Kannada4Android;
 
 import java.io.IOException;
 
-import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
-import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizerFactory;
 import android.app.Activity;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -21,15 +19,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 
 	private static final String LOG_TAG = "Kannada4AndroidCamera";
 	private Camera camera;
-	private final IOpticalCharacterRecognizer ocr;
-
-	public CameraActivity() {
-		this(OpticalCharacterRecognizerFactory.getOpticalCharacterRecognizer());
-	}
-
-	public CameraActivity(IOpticalCharacterRecognizer ocr) {
-		this.ocr = ocr;
-	}
+	private static final String PIC_DATA = "PIC_DATA";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +74,17 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 	}
 
 	private final class JPEGImageCallbackListener implements PictureCallback {
+
 		public void onPictureTaken(byte[] data, Camera camera) {
-			AsyncTask<byte[], Integer, Integer> recogniserTask = new OCRRecognizerTask(ocr);
-			recogniserTask.execute(data);
+			Bundle bundle = new Bundle();
+			bundle.putByteArray(PIC_DATA, data);
+			
+			Intent resultIntent = new Intent(getBaseContext(), ResultActivity.class);
+			resultIntent.putExtras(bundle);
+			
+			startActivity(resultIntent);
+			/*AsyncTask<byte[], Integer, Integer> recogniserTask = new OCRRecognizerTask(ocr);
+			recogniserTask.execute(data);*/
 		}
 	}
 

@@ -1,9 +1,6 @@
 package oldcask.android.Kannada4Android.ocr.imageLibrary;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import jjil.core.RgbImage;
 import android.content.Context;
@@ -47,7 +44,7 @@ public class RgbImageAndroid  {
     static public void toFile(Context context, RgbImage rgb, int nQuality, String szPath) 
     	throws IOException
     {
-    	File newFile = new File(szPath);
+    	/*File newFile = new File(szPath);
     	newFile.createNewFile();
      	OutputStream os = new FileOutputStream(newFile,false);
      	try {
@@ -62,6 +59,6 @@ public class RgbImageAndroid  {
 	     	bmp.compress(format, nQuality, os);
      	} finally {
      		os.close();
-     	}
+     	}*/
     }
 }

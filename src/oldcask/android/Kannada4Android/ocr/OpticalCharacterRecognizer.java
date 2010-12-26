@@ -144,7 +144,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	}
 
 	@Override
-	public String recogniseImage(byte[] jpegData) {
+	public OCRResult recogniseImage(byte[] jpegData) {
 		try {
 
 			/*
@@ -154,8 +154,6 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			jpegData = new byte[100000];
 			fis.read(jpegData);
 */
-			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
-					.decodeByteArray(jpegData, 0, jpegData.length));
 
 			RgbImage noiseremovedImage = removeNoise(jpegData);
 
@@ -169,12 +167,14 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			
 			System.out.println(recognisedString.toString());
 			
-			return recognisedString.toString();
+			OCRResult ocrResult = new OCRResult(recognisedString.toString(), recognisedString.toString());
+			
+			return ocrResult;
 		} catch (Exception e) {
 			Log.e(TAG_NAME, "Recognise Image Spit an error "+e);
 			e.printStackTrace();
 		}
-		return "Sorry!! Somethings gone a bit wrong";
+		return new OCRResult("","Sorry!! Somethings gone a bit wrong");
 	}
 
 	private StringBuilder recogniseStrings(BIQueue PicQueue) {
@@ -200,6 +200,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		for (int i = 0; i < recognisedStrings.length; i++) {
 			finalRecognisedString.append(recognisedStrings[i]);
 		}
+		
 		return finalRecognisedString;
 	}
 	private BIQueue segmentImage(RgbImage localisedImage) {

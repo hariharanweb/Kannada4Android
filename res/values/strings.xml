@@ -3,5 +3,9 @@
     <string name="trainingNetwork">Teaching Kannada To your phone.....</string>
     <string name="ContinueButton">Continue</string>
     <string name="app_name">Kannada4Android</string>
-<string name="TakePic">Pic</string>
+    <string name="TakePic">Pic</string>	
+	<string name="yourResult">Processing....</string>
+	<string name="inKannada">In Kannada</string>
+	<string name="translation">Literal Translation</string>
+
 </resources>
