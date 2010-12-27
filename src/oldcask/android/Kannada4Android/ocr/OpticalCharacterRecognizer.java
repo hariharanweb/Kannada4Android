@@ -1,6 +1,7 @@
 package oldcask.android.Kannada4Android.ocr;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -150,14 +151,13 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			/*
 			 * The following 3 lines will be removed..
 			 */
-/*			FileInputStream fis = new FileInputStream("data/img02.jpg");
+			FileInputStream fis = new FileInputStream("data/tamil3.jpg");
 			jpegData = new byte[100000];
 			fis.read(jpegData);
-*/
-			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
-					.decodeByteArray(jpegData, 0, jpegData.length));
 
-			RgbImage noiseremovedImage = removeNoise(jpegData);
+			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length));
+
+			RgbImage noiseremovedImage = removeNoise(inputImage);
 
 			boolean[][] noiseRemovedThresholdedBoolean = thresholdImage(noiseremovedImage);
 
@@ -180,7 +180,8 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private StringBuilder recogniseStrings(BIQueue PicQueue) {
 		double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
 		String recognisedStrings[] = new String[20];
-		for (int x = 0; x < PicQueue.getSize(); x++) {
+		int x;
+		for (x = 0; x < PicQueue.getSize(); x++) {
 			int idx = 0;
 			boolean FromQueue[][] = PicQueue.getArray(x);
 			for (int i = 0; i < FromQueue.length; i++) {
@@ -197,7 +198,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			recognisedStrings[x] = mappedStrings[best];
 		}
 		StringBuilder finalRecognisedString = new StringBuilder();
-		for (int i = 0; i < recognisedStrings.length; i++) {
+		for (int i = 0; i < x; i++) {
 			finalRecognisedString.append(recognisedStrings[i]);
 		}
 		return finalRecognisedString;
@@ -251,9 +252,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return noiseRemovedThresholdedBoolean;
 	}
 
-	private RgbImage removeNoise(byte[] jpegData) throws IOException {
-		RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
-				.decodeByteArray(jpegData, 0, jpegData.length));
+	private RgbImage removeNoise(RgbImage inputImage) throws IOException {
 		RemoveNoise removeNoise = new RemoveNoise(inputImage);
 		RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
 		RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,
