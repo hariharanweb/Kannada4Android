@@ -76,7 +76,7 @@ public class Localisation {
 			e.printStackTrace();
 		}
 
-		refreshData(inputImage, Threshold.threshold(inputImage, 0.75f, 0.15f));
+		refreshData(inputImage, Threshold.thresholdIterative(inputImage));
 		return inputImage;
 	}
 
@@ -138,10 +138,10 @@ public class Localisation {
 
 	public RgbImage localiseImageByHeight(RgbImage imageToBeLocalised,
 			boolean inputBoolean[][]) {
-		int topEnd = 0, j = 1, bottomEnd = imageToBeLocalised.getHeight() - 1;
+		int topEnd = 0,bottomEnd = imageToBeLocalised.getHeight() - 1;
 		refreshData(imageToBeLocalised, inputBoolean);
 		try {
-			topEnd = findTopEnd(topEnd, j);
+			topEnd = findTopEnd(topEnd);
 
 			bottomEnd = findBottomEnd(bottomEnd);
 
@@ -161,17 +161,16 @@ public class Localisation {
 			e.printStackTrace();
 		}
 		// Print(Threshold.threshold(imageToBeLocalised, 0.75f, 0.15f));
-		refreshData(inputImage, Threshold.threshold(inputImage, 0.75f, 0.15f));
+		refreshData(inputImage, Threshold.thresholdIterative(inputImage));
 		return imageToBeLocalised;
 	}
 
 	private int findBottomEnd(int bottomEnd) {
-		int j;
+		int j =  height/2;
 		boolean found;
 		found = false;
-		j = height - 1;
-		while (!found & j >= (3 * height / 4)) {
-			bottomEnd = j--;
+		while (!found & j < height) {
+			bottomEnd = j++;
 			if (horizontalStrength[bottomEnd] <= MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
@@ -180,11 +179,12 @@ public class Localisation {
 		return bottomEnd;
 	}
 
-	private int findTopEnd(int topEnd, int j) {
+	private int findTopEnd(int topEnd) {
 		boolean found = false;
-		while (!found & j < height) {
-			topEnd = j++;
-			if (horizontalStrength[topEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+		int j = height/2;
+		while (!found & j > 0) {
+			topEnd = j--;
+			if (horizontalStrength[topEnd] <= MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)

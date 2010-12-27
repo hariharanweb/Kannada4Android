@@ -22,24 +22,27 @@ import android.util.Log;
 public class Threshold {
 
 	private static final String TAG_THRESHOLD = "Threshold";
-	private static final int MAX_THRESHOLD_COUNT = 5;
 	private static int MYTHRESHOLD = 136;
 
 	/**
 	 * Makes an RgbImage from the Given Boolean
 	 * 
 	 * @Param booleanRepresentationOfImage The boolean representation of the
-	 * image
+	 *        image
 	 * 
 	 * @Return The RgbImage
 	 */
 	public static RgbImage makeImage(boolean booleanRepresentationOfImage[][]) {
 		if (booleanRepresentationOfImage == null) {
-			Log.e(TAG_THRESHOLD,"Make Image Returned NULL because input boolean was NULL");
+			Log.e(TAG_THRESHOLD,
+					"Make Image Returned NULL because input boolean was NULL");
 			return null;
 		}
-		RgbImage rgbImage = new RgbImage(booleanRepresentationOfImage[0].length, booleanRepresentationOfImage.length);
-		Bitmap tempBitmap = RgbImageAndroid.toBitmap(rgbImage).copy(Bitmap.Config.ARGB_8888, true);
+		RgbImage rgbImage = new RgbImage(
+				booleanRepresentationOfImage[0].length,
+				booleanRepresentationOfImage.length);
+		Bitmap tempBitmap = RgbImageAndroid.toBitmap(rgbImage).copy(
+				Bitmap.Config.ARGB_8888, true);
 		for (int i = 0; i < booleanRepresentationOfImage.length; i++)
 			for (int j = 0; j < booleanRepresentationOfImage[0].length; j++)
 				if (booleanRepresentationOfImage[i][j] == false)
@@ -49,26 +52,7 @@ public class Threshold {
 		return RgbImageAndroid.toRgbImage(tempBitmap);
 	}
 
-	/**
-	 * Threshold method uses the Brighten and Darken methods to quickly
-	 * threshold the image
-	 * 
-	 * @param inputImageToThreshold
-	 *            The input BufferedImage of the Candidate
-	 * 
-	 * @param upperLimit
-	 *            The upper limit which the B/W ratio of the thresholded image
-	 *            should not exceed
-	 * 
-	 * @param lowerLimit
-	 *            The lower limit which the B/W ratio of the thresholded image
-	 *            should not exceed
-	 * 
-	 * @return The thresholded image represented as a boolean array
-	 */
-
-	public static boolean[][] threshold(RgbImage inputImageToThreshold,
-			float upperLimit, float lowerLimit) {
+	public static boolean[][] thresholdIterative(RgbImage inputImageToThreshold) {
 
 		RgbImage imageToThreshold = (RgbImage) inputImageToThreshold.clone();
 		Bitmap imageToThresholdBitmap = RgbImageAndroid.toBitmap(
@@ -77,44 +61,49 @@ public class Threshold {
 		int height = imageToThreshold.getHeight();
 		int width = imageToThreshold.getWidth();
 		boolean thresholdedImage[][] = new boolean[height][width];
-		int blackPixelCount = 0, totalThresholdingCount = 0;
+		int area = width * height;
+		/* Step 1 : To Choose Arbitrary Threshold */
+		int ITERATIVETHRESHOLD = MYTHRESHOLD, newThreshold = MYTHRESHOLD;
 
-		long area = height * width;
+		do {
+			ITERATIVETHRESHOLD = newThreshold;
+			/* Step 2 : Find G1 and G2 */
+			int[] objectPixels = new int[area], backgroundPixels = new int[area];
+			int objectPixelsCount = 0, backgroundPixelsCount = 0;
+			int objectPixelsSet = 0, backgroundPixelsSet = 0;
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+					int x = Math.abs(imageToThresholdBitmap.getPixel(i, j)) / 100000;
+					if (x > ITERATIVETHRESHOLD) {
+						objectPixels[objectPixelsCount++] = x;
+						objectPixelsSet += x;
+					} else {
+						backgroundPixels[backgroundPixelsCount++] = x;
+						backgroundPixelsSet += x;
+					}
+				}
+			}
 
-		blackPixelCount = thresholdHelper(imageToThresholdBitmap, height,
-				width, thresholdedImage);
-		float ratio = ((float) blackPixelCount) / ((float) area);
-		totalThresholdingCount++;
+			/* Step 3: Find Average in every set */
+			int m1 = objectPixelsSet / objectPixelsCount;
+			int m2 = backgroundPixelsSet / backgroundPixelsCount;
 
-		while (ratio < lowerLimit || ratio > upperLimit) {
-			System.out.println("ratio: " + ratio + " low :" + lowerLimit
-					+ "high :" + upperLimit);
-
-			if (ratio > upperLimit)
-				imageToThresholdBitmap = Intensity.doBrighten(imageToThresholdBitmap);
-			if (ratio < lowerLimit)
-				imageToThresholdBitmap = Intensity.doDarken(imageToThresholdBitmap);
-			if (totalThresholdingCount > MAX_THRESHOLD_COUNT)
-				break;
-
-			blackPixelCount = thresholdHelper(imageToThresholdBitmap, height,
-					width, thresholdedImage);
-			totalThresholdingCount++;
-			
-			ratio = ((float) blackPixelCount) / ((float) area);
-		}
-		System.out.println(" Thresholding done!!");
-
+			/* Step 4: Find new Threshold */
+			newThreshold = (m1 + m2) / 2;
+			System.out.println("New Threshold = "+newThreshold);
+		} while (newThreshold != ITERATIVETHRESHOLD);
+		int blackPixelCount = thresholdIterativeHelper(imageToThresholdBitmap, height, width,thresholdedImage,newThreshold);
+		System.out.println("Total Number of Black Pixels = " +blackPixelCount + "Ratio = "+(blackPixelCount/area));
 		return thresholdedImage;
 	}
 
-	private static int thresholdHelper(Bitmap imageToThresholdBitmap,
-			int height, int width, boolean[][] thresholdedImage) {
+	private static int thresholdIterativeHelper(Bitmap imageToThresholdBitmap,
+			int height, int width, boolean[][] thresholdedImage,int newThreshold) {
 		int blackPixelCount = 0;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				int x = Math.abs(imageToThresholdBitmap.getPixel(i, j)) / 100000;
-				if (x > MYTHRESHOLD) {
+				if (x > newThreshold) {
 					thresholdedImage[j][i] = true;
 					blackPixelCount++;
 				} else {

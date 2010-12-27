@@ -99,8 +99,7 @@ public class Halves {
 		}
 		// System.out.println(GoodCount);
 		while (GoodCount == 0 && trialCount < 3) {
-			Localisation Act = new Localisation(inputs[0], Threshold.threshold(
-					inputs[0], 0.70f, 0.10f));
+			Localisation Act = new Localisation(inputs[0], Threshold.thresholdIterative(inputs[0]));
 			Half[0] = Act.localiseImageByWidth();
 			ratio = Threshold.threshold(Half[0]);
 			if (ratio < 0.56f && Half[0].getHeight() > 5)

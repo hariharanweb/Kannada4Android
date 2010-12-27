@@ -8,7 +8,7 @@ import jjil.core.RgbImage;
 import android.util.Log;
 
 public class Segmentation {
-	private static final double VERTICAL_STRENGTH_THRESHOLD = 0.05;
+	private static final int MIN_PIXEL_REQUIRED_FOR_A_LETTER_TO_EXIST = 2;
 	private static final int MAX_CHARACTERS = 20;
 	private static final String TAG_SEGMENTATION = "Segmentation";
 	private RgbImage inputImage;
@@ -19,8 +19,6 @@ public class Segmentation {
 	boolean inputBoolean[][];
 
 	int height, width;
-
-	static int pcount = 1;
 
 	/**
 	 * 
@@ -45,7 +43,7 @@ public class Segmentation {
 		}
 	}
 
-	public void segment(BIQueue PicQueue) {
+	public void segment(SegmentedImageQueue PicQueue) {
 		int Lines[] = new int[width];
 		int from[] = new int[MAX_CHARACTERS];
 		int to[] = new int[MAX_CHARACTERS];
@@ -54,7 +52,7 @@ public class Segmentation {
 		Lines[++count] = 0;
 
 		for (int j = 0; j < width; j++) {
-			if (verticalStrength[j] < VERTICAL_STRENGTH_THRESHOLD * inputBoolean.length)
+			if (verticalStrength[j] < MIN_PIXEL_REQUIRED_FOR_A_LETTER_TO_EXIST)
 				Lines[count++] = j;
 		}
 		Lines[count] = width;
@@ -64,7 +62,7 @@ public class Segmentation {
 				from[index] = Lines[j];
 				to[index] = Lines[j + 1];
 				lineWidth[index] = to[index] - from[index];
-				System.out.println("Printing Hsplit " + from[index] + " "
+				System.out.println("Printing Segment " + from[index] + " "
 						+ to[index] + " " + lineWidth[index] + " " + index);
 
 				try {
@@ -74,7 +72,9 @@ public class Segmentation {
 					croppedImage.push(inputImage);
 					if (!croppedImage.isEmpty())
 						segment = (RgbImage) croppedImage.getFront();
-
+					
+					System.out.println("***************LineWidth = " + lineWidth[index] + " Threshhold = "+Threshold.threshold(segment));
+					
 					if (lineWidth[index] < 4 || Threshold.threshold(segment) > 0.75f)
 						continue;
 					boolean subArray[][] = getSubArray(inputBoolean,from[index], to[index], 0, height);

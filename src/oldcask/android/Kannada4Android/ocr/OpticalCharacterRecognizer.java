@@ -12,7 +12,7 @@ import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
 import oldcask.android.Kannada4Android.ocr.preProcessing.RemoveNoise;
-import oldcask.android.Kannada4Android.ocr.recognition.BIQueue;
+import oldcask.android.Kannada4Android.ocr.recognition.SegmentedImageQueue;
 import oldcask.android.Kannada4Android.ocr.recognition.Segmentation;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.KohonenNetwork;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.SampleData;
@@ -52,11 +52,13 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			kohonenNeuralNetwork.setTrainingSet(set);
 			kohonenNeuralNetwork.learn();
 			System.out.println("Training done!!!");
-			
+
 			mappedStrings = mapNeurons();
 			System.out.println("Mapping done!!!");
 		} catch (Exception e) {
-			Log.e(TAG_NAME,	"Kohonen Neural Network Training Not Done Properly");
+			Log
+					.e(TAG_NAME,
+							"Kohonen Neural Network Training Not Done Properly");
 			e.printStackTrace();
 		}
 	}
@@ -151,11 +153,12 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			/*
 			 * The following 3 lines will be removed..
 			 */
-			FileInputStream fis = new FileInputStream("data/tamil3.jpg");
-			jpegData = new byte[100000];
+			FileInputStream fis = new FileInputStream("data/img06.jpg");
+			jpegData = new byte[1000000];
 			fis.read(jpegData);
 
-			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length));
+			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
+					.decodeByteArray(jpegData, 0, jpegData.length));
 
 			RgbImage noiseremovedImage = removeNoise(inputImage);
 
@@ -163,23 +166,23 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 
 			RgbImage localisedImage = localiseImage(noiseRemovedThresholdedBoolean);
 
-			BIQueue PicQueue = segmentImage(localisedImage);
+			SegmentedImageQueue PicQueue = segmentImage(localisedImage);
 
 			StringBuilder recognisedString = recogniseStrings(PicQueue);
-			
+
 			System.out.println(recognisedString.toString());
-			
-			OCRResult ocrResult = new OCRResult(recognisedString.toString(), recognisedString.toString());
-			
+			OCRResult ocrResult = new OCRResult(recognisedString.toString(),
+					recognisedString.toString());
+
 			return ocrResult;
 		} catch (Exception e) {
-			Log.e(TAG_NAME, "Recognise Image Spit an error "+e);
+			Log.e(TAG_NAME, "Recognise Image Spit an error " + e);
 			e.printStackTrace();
 		}
-		return new OCRResult("","Sorry!! Somethings gone a bit wrong");
+		return new OCRResult("", "Sorry!! Somethings gone a bit wrong");
 	}
 
-	private StringBuilder recogniseStrings(BIQueue PicQueue) {
+	private StringBuilder recogniseStrings(SegmentedImageQueue PicQueue) {
 		double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
 		String recognisedStrings[] = new String[20];
 		int x;
@@ -195,20 +198,22 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			double normfac[] = new double[1];
 			double synth[] = new double[1];
 			int best = kohonenNeuralNetwork.winner(input, normfac, synth);
-			
-			System.out.println("Kohonen Says: " + best + "  " + mappedStrings[best]);
+
+			System.out.println("Kohonen Says: " + best + "  "
+					+ mappedStrings[best]);
 			recognisedStrings[x] = mappedStrings[best];
 		}
 		StringBuilder finalRecognisedString = new StringBuilder();
 		for (int i = 0; i < x; i++) {
 			finalRecognisedString.append(recognisedStrings[i]);
 		}
-		
+
 		return finalRecognisedString;
 	}
-	private BIQueue segmentImage(RgbImage localisedImage) {
-		boolean localisedThresholdedBoolean[][] = Threshold.threshold(
-				localisedImage, 0.75f, 0.15f);
+
+	private SegmentedImageQueue segmentImage(RgbImage localisedImage) {
+		boolean localisedThresholdedBoolean[][] = Threshold
+				.thresholdIterative(localisedImage);
 		RgbImage localisedThresholdedImage = Threshold
 				.makeImage(localisedThresholdedBoolean);
 		Segmentation Splitter = new Segmentation(localisedThresholdedImage,
@@ -223,7 +228,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		//
 		// System.out.println("No of halves = " + halves);
 
-		BIQueue PicQueue = new BIQueue();
+		SegmentedImageQueue PicQueue = new SegmentedImageQueue();
 		Splitter.segment(PicQueue);
 
 		System.out.println("Ze Queue Holds " + PicQueue.getSize());
@@ -237,20 +242,20 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 				noiseRemovedThresholdedBoolean);
 		RgbImage localisedImage = actions.localiseImageByWidth();
 		localisedImage = actions.localiseImageByHeight(localisedImage,
-				Threshold.threshold(localisedImage, 0.75f, 0.15f));
+				Threshold.thresholdIterative(localisedImage));
 		RgbImageAndroid.toFile(null, localisedImage, MAX_QUALITY,
-				"data/perfected.jpg");
+				"perfected.jpg");
 		System.out.println("*************Localisation Done *************");
 		return localisedImage;
 	}
 
 	private boolean[][] thresholdImage(RgbImage noiseremovedImage)
 			throws IOException {
-		boolean[][] noiseRemovedThresholdedBoolean = Threshold.threshold(
-				noiseremovedImage, 0.75f, 0.15f);
+		boolean[][] noiseRemovedThresholdedBoolean = Threshold
+				.thresholdIterative(noiseremovedImage);
 		RgbImageAndroid.toFile(null, Threshold
 				.makeImage(noiseRemovedThresholdedBoolean), MAX_QUALITY,
-				"data/thresholded1.jpg");
+				"thresholded1.jpg");
 		System.out.println("Thresholding Done after Noise Removal");
 		return noiseRemovedThresholdedBoolean;
 	}
@@ -259,7 +264,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		RemoveNoise removeNoise = new RemoveNoise(inputImage);
 		RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
 		RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,
-				"data/noiseremoved.jpg");
+				"noiseremoved.jpg");
 		System.out.println("Noise Removal Done!!");
 		return noiseremovedImage;
 	}

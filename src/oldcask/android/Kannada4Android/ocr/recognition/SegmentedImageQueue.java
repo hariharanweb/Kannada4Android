@@ -12,7 +12,7 @@ import jjil.core.RgbImage;
 /**
  * @author Source Code
  */
-public class BIQueue {
+public class SegmentedImageQueue {
 	private static final int LAYERS_TO_THIN = 2;
 	private static final int MAX_CHARACTERS = 20;
 	List<RgbImage> segmentsList;
@@ -21,7 +21,7 @@ public class BIQueue {
 	Hilditch segmentThinner;
 	DownSample downSampler[];
 
-	public BIQueue() {
+	public SegmentedImageQueue() {
 		segmentsList = new ArrayList<RgbImage>(MAX_CHARACTERS);
 		thinnedSegmentsList = new ArrayList<RgbImage>(MAX_CHARACTERS);
 		validSegments = 0;
@@ -49,7 +49,7 @@ public class BIQueue {
 
 		if (TMP != null) {
 			tempBoolean = new boolean[TMP.getHeight()][TMP.getWidth()];
-			tempBoolean = Threshold.threshold(TMP, 0.999f, 0.001f);
+			tempBoolean = Threshold.thresholdIterative(TMP);
 			Localisation.Print(tempBoolean);
 
 			thinnedSegmentsList.add(TMP);
