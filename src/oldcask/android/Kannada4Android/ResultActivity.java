@@ -5,34 +5,33 @@ import oldcask.android.Kannada4Android.ocr.OCRResult;
 import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizerFactory;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 
 public class ResultActivity extends Activity {
-	
+
 	private final IOpticalCharacterRecognizer opticalCharacterRecognizer;
 	private static final String PIC_DATA = "PIC_DATA";
 
 	public ResultActivity() {
 		this(OpticalCharacterRecognizerFactory.getOpticalCharacterRecognizer());
 	}
-	
-	
+
 	public ResultActivity(IOpticalCharacterRecognizer opticalCharacterRecognizer) {
 		this.opticalCharacterRecognizer = opticalCharacterRecognizer;
 	}
-
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.result);
 		byte[] data = getData();
-		
-		AsyncTask<byte[], Integer, OCRResult> recogniserTask = new OCRRecognizerTask(opticalCharacterRecognizer,this);
+
+		AsyncTask<byte[], Integer, OCRResult> recogniserTask = new OCRRecognizerTask(
+				opticalCharacterRecognizer, this);
 		recogniserTask.execute(data);
 	}
-
 
 	private byte[] getData() {
 		Intent intent = getIntent();
@@ -41,11 +40,14 @@ public class ResultActivity extends Activity {
 		return data;
 	}
 
-
 	public void showResult(OCRResult result) {
 		TextView processing = (TextView) findViewById(R.id.yourResult);
 		processing.setText("Results");
+		
 		TextView inKannadaFont = (TextView) findViewById(R.id.inKannadaFont);
+		Typeface kannadaFont = Typeface.createFromAsset(getAssets(), "fonts/brhknd.ttf");
+		inKannadaFont.setTypeface(kannadaFont);
+		
 		inKannadaFont.setText(result.getInKannada());
 		TextView literalTranslation = (TextView) findViewById(R.id.translation);
 		literalTranslation.setText(result.getLiteralTranslation());
