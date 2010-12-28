@@ -1,13 +1,16 @@
 package oldcask.android.Kannada4Android;
 
+import jjil.core.RgbImage;
 import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
 import oldcask.android.Kannada4Android.ocr.OCRResult;
 import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizerFactory;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ResultActivity extends Activity {
@@ -28,7 +31,7 @@ public class ResultActivity extends Activity {
 		setContentView(R.layout.result);
 		byte[] data = getData();
 
-		AsyncTask<byte[], Integer, OCRResult> recogniserTask = new OCRRecognizerTask(
+		AsyncTask<byte[], RgbImage, OCRResult> recogniserTask = new OCRRecognizerTask(
 				opticalCharacterRecognizer, this);
 		recogniserTask.execute(data);
 	}
@@ -51,5 +54,10 @@ public class ResultActivity extends Activity {
 		inKannadaFont.setText(result.getInKannada());
 		TextView literalTranslation = (TextView) findViewById(R.id.translation);
 		literalTranslation.setText(result.getLiteralTranslation());
+	}
+
+	public void setProgressView(Bitmap bitmap) {
+		ImageView progressView = (ImageView) findViewById(R.id.ResultImage);
+		progressView.setImageBitmap(bitmap);
 	}
 }

@@ -1,10 +1,8 @@
 package oldcask.android.Kannada4Android.ocr;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import jjil.core.RgbImage;
@@ -12,12 +10,13 @@ import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
 import oldcask.android.Kannada4Android.ocr.preProcessing.RemoveNoise;
-import oldcask.android.Kannada4Android.ocr.recognition.SegmentedImageQueue;
 import oldcask.android.Kannada4Android.ocr.recognition.Segmentation;
+import oldcask.android.Kannada4Android.ocr.recognition.SegmentedImageQueue;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.KohonenNetwork;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.SampleData;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.TrainingSet;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.util.Log;
 
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
@@ -147,24 +146,22 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	}
 
 	@Override
-	public OCRResult recogniseImage(byte[] jpegData) {
+	public OCRResult recogniseImage(RgbImage localisedImage) {
 		try {
 
 			/*
 			 * The following 3 lines will be removed..
 			 */
-			FileInputStream fis = new FileInputStream("data/img06.jpg");
+			/*FileInputStream fis = new FileInputStream("data/img06.jpg");
 			jpegData = new byte[1000000];
-			fis.read(jpegData);
+			fis.read(jpegData);*/
 
-			RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
-					.decodeByteArray(jpegData, 0, jpegData.length));
+			/*RgbImage noiseremovedImage = removeNoise(jpegData);
 
-			RgbImage noiseremovedImage = removeNoise(inputImage);
+			RgbImage thresholdImage = thresholdImage(noiseremovedImage);
+			
 
-			boolean[][] noiseRemovedThresholdedBoolean = thresholdImage(noiseremovedImage);
-
-			RgbImage localisedImage = localiseImage(noiseRemovedThresholdedBoolean);
+			RgbImage localisedImage = localiseImage(thresholdImage);*/
 
 			SegmentedImageQueue PicQueue = segmentImage(localisedImage);
 
@@ -235,11 +232,9 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return PicQueue;
 	}
 
-	private RgbImage localiseImage(boolean[][] noiseRemovedThresholdedBoolean)
-			throws IOException {
-		Localisation actions = new Localisation(Threshold
-				.makeImage(noiseRemovedThresholdedBoolean),
-				noiseRemovedThresholdedBoolean);
+	public RgbImage localiseImage(RgbImage thresholdImage){
+		Localisation actions = new Localisation(thresholdImage,
+				Threshold.thresholdIterative(thresholdImage));
 		RgbImage localisedImage = actions.localiseImageByWidth();
 		localisedImage = actions.localiseImageByHeight(localisedImage,
 				Threshold.thresholdIterative(localisedImage));
@@ -249,23 +244,27 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return localisedImage;
 	}
 
-	private boolean[][] thresholdImage(RgbImage noiseremovedImage)
-			throws IOException {
+	public RgbImage thresholdImage(RgbImage noiseremovedImage) {
 		boolean[][] noiseRemovedThresholdedBoolean = Threshold
 				.thresholdIterative(noiseremovedImage);
 		RgbImageAndroid.toFile(null, Threshold
 				.makeImage(noiseRemovedThresholdedBoolean), MAX_QUALITY,
 				"thresholded1.jpg");
 		System.out.println("Thresholding Done after Noise Removal");
-		return noiseRemovedThresholdedBoolean;
+		return Threshold.makeImage(noiseRemovedThresholdedBoolean);
 	}
 
-	private RgbImage removeNoise(RgbImage inputImage) throws IOException {
+	public RgbImage removeNoise(byte[] jpegData) {
+		
+		Options options = new BitmapFactory.Options();
+		options.inSampleSize =4 ;
+		RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
+				.decodeByteArray(jpegData, 0, jpegData.length,options));
 		RemoveNoise removeNoise = new RemoveNoise(inputImage);
 		RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
-		RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,
+		/*RgbImageAndroid.toFile(null, noiseremovedImage, MAX_QUALITY,
 				"noiseremoved.jpg");
-		System.out.println("Noise Removal Done!!");
+		System.out.println("Noise Removal Done!!");*/
 		return noiseremovedImage;
 	}
 }

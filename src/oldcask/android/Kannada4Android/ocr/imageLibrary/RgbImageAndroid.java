@@ -45,12 +45,13 @@ public class RgbImageAndroid  {
     }
     
     static public void toFile(Context context, RgbImage rgb, int nQuality, String szPath) 
-    	throws IOException
+    	
     {
-    	File newFile = new File("/data/"+szPath);
-    	newFile.createNewFile();
-     	OutputStream os = new FileOutputStream(newFile,false);
+    	File newFile = new File("/sdcard/"+szPath);
+    	OutputStream os = null;
      	try {
+     		newFile.createNewFile();
+			os = new FileOutputStream(newFile,false);
 	     	Bitmap bmp = toBitmap(rgb);
 	     	Bitmap.CompressFormat format = Bitmap.CompressFormat.JPEG;
 	     	szPath = szPath.toLowerCase();
@@ -60,8 +61,14 @@ public class RgbImageAndroid  {
      			format = Bitmap.CompressFormat.PNG;
      		}
 	     	bmp.compress(format, nQuality, os);
-     	} finally {
-     		os.close();
+     	} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+     		try {
+				os.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
      	}
     }
 }
