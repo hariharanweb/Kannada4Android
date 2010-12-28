@@ -2,15 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="wrap_content" android:layout_height="wrap_content">
 
-	<ImageView android:id="@+id/ResultImage" android:layout_width="wrap_content" android:layout_height="wrap_content"></ImageView><TextView android:text="@string/yourResult" android:id="@+id/yourResult"
+	<ImageView android:id="@+id/ResultImage"
+		android:layout_width="wrap_content" android:layout_height="fill_parent"></ImageView>
+
+	<TextView android:text="@string/yourResult" android:id="@+id/yourResult"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:textSize="15sp" android:textStyle="bold"></TextView>
+		android:textSize="30sp" android:textStyle="bold"></TextView>
 
 	<TextView android:text="@string/inKannada" android:id="@+id/inKannada"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
 
 	<TextView android:id="@+id/inKannadaFont"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" android:textSize="15sp"></TextView>
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:textSize="30sp"></TextView>
 
 	<TextView android:text="@+id/translation" android:id="@+id/translationLabel"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
