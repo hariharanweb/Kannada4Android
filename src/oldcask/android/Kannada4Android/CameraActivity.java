@@ -81,7 +81,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 			Bundle bundle = new Bundle();
 			bundle.putByteArray(PIC_DATA, data);
 			
-			Intent resultIntent = new Intent(getBaseContext(), ResultActivity.class);
+			Intent resultIntent = new Intent(getBaseContext(), ProcessingActivity.class);
 			resultIntent.putExtras(bundle);
 			
 			startActivity(resultIntent);

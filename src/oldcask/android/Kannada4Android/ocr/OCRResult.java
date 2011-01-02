@@ -1,6 +1,9 @@
 package oldcask.android.Kannada4Android.ocr;
 
-public class OCRResult {	
+import java.io.Serializable;
+
+public class OCRResult implements Serializable{	
+	private static final long serialVersionUID = 1L;
 	private String inKannada;
 	private String literalTranslation;
 	

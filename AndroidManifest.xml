@@ -14,7 +14,8 @@
         </activity>
 		
     <activity android:name="CameraActivity" android:screenOrientation="landscape"></activity>
-<activity android:name="ResultActivity"></activity>
+<activity android:name="ResultActivity" android:screenOrientation="landscape"></activity>
+<activity android:name="ProcessingActivity" android:screenOrientation="landscape"></activity>
 </application>
  <uses-permission android:name="android.permission.CAMERA" />
  <uses-feature android:name="android.hardware.camera" />

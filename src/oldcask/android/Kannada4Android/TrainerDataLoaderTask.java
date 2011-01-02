@@ -5,13 +5,13 @@ import java.io.InputStream;
 import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
 import android.os.AsyncTask;
 
-public final class TrainerDataLoader extends
+public final class TrainerDataLoaderTask extends
 		AsyncTask<IOpticalCharacterRecognizer, Integer, Integer> {
 	
 	private final Kannada4Android activity;
 	private final InputStream trainingData;
 
-	public TrainerDataLoader(Kannada4Android activity, InputStream trainingData) {
+	public TrainerDataLoaderTask(Kannada4Android activity, InputStream trainingData) {
 		this.activity = activity;
 		this.trainingData = trainingData;
 	}

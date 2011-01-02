@@ -3,30 +3,37 @@ package oldcask.android.Kannada4Android;
 import jjil.core.RgbImage;
 import oldcask.android.Kannada4Android.ocr.IOpticalCharacterRecognizer;
 import oldcask.android.Kannada4Android.ocr.OCRResult;
-import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import android.os.AsyncTask;
 
-final class OCRRecognizerTask extends AsyncTask<byte[], RgbImage, OCRResult> {
+final class OCRRecognizerTask extends AsyncTask<byte[], ProgressResult, OCRResult> {
 
 	private final IOpticalCharacterRecognizer ocr;
-	private final ResultActivity resultActivity;
+	private final ProcessingActivity processingActivity;
 
 	public OCRRecognizerTask(IOpticalCharacterRecognizer ocr,
-			ResultActivity resultActivity) {
+			ProcessingActivity processingActivity) {
 		this.ocr = ocr;
-		this.resultActivity = resultActivity;
+		this.processingActivity = processingActivity;
 	}
 
 	protected OCRResult doInBackground(byte[]... data) {
 		byte[] jpegAsBytes = data[0];
+		ProgressResult progressResult = new ProgressResult();
+	
 		RgbImage noiseRemoved = ocr.removeNoise(jpegAsBytes);
-		publishProgress(noiseRemoved);
+		progressResult.setImage(noiseRemoved);
+		progressResult.setProgress(25);
+		publishProgress(progressResult);
 		
 		RgbImage thresholdImage = ocr.thresholdImage(noiseRemoved);
-		publishProgress(thresholdImage);
+		progressResult.setImage(thresholdImage);
+		progressResult.setProgress(50);
+		publishProgress(progressResult);
 		
 		RgbImage localisedImage = ocr.localiseImage(thresholdImage);
-		publishProgress(localisedImage);
+		progressResult.setImage(localisedImage);
+		progressResult.setProgress(75);
+		publishProgress(progressResult);
 		
 		OCRResult recogniseImage = ocr.recogniseImage(localisedImage);
 		
@@ -34,14 +41,15 @@ final class OCRRecognizerTask extends AsyncTask<byte[], RgbImage, OCRResult> {
 	}
 
 	@Override
-	protected void onProgressUpdate(RgbImage... values) {
+	protected void onProgressUpdate(ProgressResult... values) {
 		super.onProgressUpdate(values);
-		resultActivity.setProgressView(RgbImageAndroid.toBitmap(values[0]));
+		processingActivity.setProgressView(values[0]);
 	}
 	
 	@Override
 	protected void onPostExecute(OCRResult result) {
 		super.onPostExecute(result);
-		resultActivity.showResult(result);
+		processingActivity.showResult(result);
 	}
+	
 }

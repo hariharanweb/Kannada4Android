@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+	<TextView android:text="@string/Processing" android:id="@+id/Processing"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:textSize="20sp" android:textColor="#ffcc66"></TextView>
+	<ImageView android:id="@+id/ResultImage"
+		android:layout_width="wrap_content" android:layout_height="fill_parent"
+		android:scaleType="fitXY" android:layout_below="@id/Processing"></ImageView>
+	<ProgressBar android:id="@+id/progressUpdate"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:max="100" android:layout_centerHorizontal="true"
+		android:layout_alignBottom="@id/ResultImage" android:progress="0"
+		android:indeterminate="true"></ProgressBar>
+
+</RelativeLayout>

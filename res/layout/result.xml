@@ -1,25 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content" android:layout_height="wrap_content">
-
-	<ImageView android:id="@+id/ResultImage"
-		android:layout_width="wrap_content" android:layout_height="fill_parent"></ImageView>
+	android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical">
 
 	<TextView android:text="@string/yourResult" android:id="@+id/yourResult"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:textSize="30sp" android:textStyle="bold"></TextView>
 
 	<TextView android:text="@string/inKannada" android:id="@+id/inKannada"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp"></TextView>
 
 	<TextView android:id="@+id/inKannadaFont"
-		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:textSize="30sp"></TextView>
 
-	<TextView android:text="@+id/translation" android:id="@+id/translationLabel"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"></TextView>
+	<TextView android:text="@string/literalTranslation" android:id="@+id/translationLabel"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="20sp"></TextView>
 
-	<TextView android:id="@+id/translation" android:layout_width="fill_parent"
+	<TextView android:id="@+id/translation" android:layout_width="wrap_content"
 		android:layout_height="wrap_content"></TextView>
 
 
