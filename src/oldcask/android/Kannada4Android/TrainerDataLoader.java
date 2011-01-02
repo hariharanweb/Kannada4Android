@@ -18,11 +18,11 @@ public final class TrainerDataLoader extends
 	
 	protected Integer doInBackground(IOpticalCharacterRecognizer... ocr) {
 		ocr[0].trainNeuralNetwork(trainingData);
-		return null;
+		return 100;
 	}
 	
 	@Override
 	protected void onPostExecute(Integer result) {
-		activity.setContinueButtonVisible();
+		activity.onTraningComplete();
 	}
 }

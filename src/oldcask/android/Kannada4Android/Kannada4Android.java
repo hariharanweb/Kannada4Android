@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 public class Kannada4Android extends Activity {
 	private final IOpticalCharacterRecognizer ocr;
@@ -36,7 +37,10 @@ public class Kannada4Android extends Activity {
 		trainerTask.execute(ocr);
 	}
 
-	public void setContinueButtonVisible() {
+	public void onTraningComplete() {
+		TextView trainingText = (TextView) findViewById(R.id.TrainingText);
+		trainingText.setText("Training complete...");
+		
 		Button continueButton = (Button) findViewById(R.id.ContinueButton);
 		continueButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
