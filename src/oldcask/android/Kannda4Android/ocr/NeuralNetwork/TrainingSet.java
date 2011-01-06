@@ -1,5 +1,7 @@
 package oldcask.android.Kannda4Android.ocr.NeuralNetwork;
 
+import java.io.Serializable;
+
 /**
  * Java Neural Network Example Handwriting Recognition by Jeff Heaton
  * (http://www.jeffheaton.com) 1-2002
@@ -12,8 +14,9 @@ package oldcask.android.Kannda4Android.ocr.NeuralNetwork;
  * @version 1.0
  */
 
-public class TrainingSet {
+public class TrainingSet implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	protected int inputCount;
 	protected int outputCount;
 	protected double input[][];

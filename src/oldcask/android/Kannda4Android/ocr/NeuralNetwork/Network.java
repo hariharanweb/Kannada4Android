@@ -1,5 +1,6 @@
 package oldcask.android.Kannda4Android.ocr.NeuralNetwork;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -12,7 +13,9 @@ import java.util.Random;
  * @version 1.0
  */
 
-abstract public class Network {
+abstract public class Network implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The value to consider a neuron on

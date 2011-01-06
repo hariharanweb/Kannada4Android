@@ -1,8 +1,12 @@
 package oldcask.android.Kannada4Android.ocr;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import jjil.core.RgbImage;
@@ -22,8 +26,8 @@ import android.util.Log;
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private static final String TAG_NAME = "OpticalCharacterRecogniser";
 
-	public static final int DOWNSAMPLE_HEIGHT = 20;
-	public static final int DOWNSAMPLE_WIDTH = 20;
+	public static final int DOWNSAMPLE_HEIGHT = 10;
+	public static final int DOWNSAMPLE_WIDTH = 10;
 
 	private ArrayList<SampleData> downSampleDataList = new ArrayList<SampleData>();
 	private KohonenNetwork kohonenNeuralNetwork;
@@ -33,8 +37,30 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 
 	@Override
 	public void trainNeuralNetwork(InputStream trainingData) {
-		loadTrainingDataFromFile(trainingData);
-		trainKohonenNeuralNetwork();
+		/*loadTrainingDataFromFile(trainingData);
+		trainKohonenNeuralNetwork();*/
+		long start = System.currentTimeMillis();
+		System.out.println(start);
+		FileInputStream f_in;
+		try {
+			f_in = new 
+				FileInputStream("\\sdcard\\network.data");
+			// Read object using ObjectInputStream
+			ObjectInputStream obj_in = 
+				new ObjectInputStream (f_in);			
+			Object obj = obj_in.readObject();
+			
+			kohonenNeuralNetwork = (KohonenNetwork) obj;
+			mappedStrings = kohonenNeuralNetwork.getMappedNeurons();
+			for (int i = 0; i < mappedStrings.length; i++) {
+				System.out.println(mappedStrings[i]);
+			}
+			System.out.println(" hurray");
+			System.out.println("****************Total*********** " + mappedStrings.length);
+			System.out.println("sadjaksjdbask "+(System.currentTimeMillis()-start));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void trainKohonenNeuralNetwork() {
@@ -51,8 +77,16 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			kohonenNeuralNetwork.setTrainingSet(set);
 			kohonenNeuralNetwork.learn();
 			System.out.println("Training done!!!");
-
-			mappedStrings = mapNeurons();
+			
+			
+			FileOutputStream f_out = new FileOutputStream("\\sdcard\\network1.data");
+			ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
+			obj_out.writeObject(kohonenNeuralNetwork);
+			obj_out.flush();
+			obj_out.close();
+			
+			
+			mappedStrings = kohonenNeuralNetwork.mapNeurons(downSampleDataList);
 			System.out.println("Mapping done!!!");
 		} catch (Exception e) {
 			Log
@@ -75,29 +109,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		}
 	}
 
-	private String[] mapNeurons() {
-		String map[] = new String[downSampleDataList.size()];
-		double normfac[] = new double[1];
-		double synth[] = new double[1];
-
-		for (int i = 0; i < map.length; i++) {
-			map[i] = "?";
-		}
-		for (int i = 0; i < downSampleDataList.size(); i++) {
-			double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
-			int idx = 0;
-			SampleData sampleData = (SampleData) downSampleDataList.get(i);
-			for (int y = 0; y < sampleData.getHeight(); y++) {
-				for (int x = 0; x < sampleData.getWidth(); x++) {
-					input[idx++] = sampleData.getData(x, y) ? .5 : -.5;
-				}
-			}
-
-			int best = kohonenNeuralNetwork.winner(input, normfac, synth);
-			map[best] = sampleData.getCharacters();
-		}
-		return map;
-	}
+	
 
 	private void loadTrainingDataFromFile(InputStream trainingDataStream) {
 		try {
@@ -267,4 +279,5 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		System.out.println("Noise Removal Done!!");*/
 		return noiseremovedImage;
 	}
+	
 }

@@ -1,5 +1,10 @@
 package oldcask.android.Kannda4Android.ocr.NeuralNetwork;
 
+import java.io.Serializable;
+import java.util.List;
+
+import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizer;
+
 /**
  * Java Neural Network Example Handwriting Recognition by Jeff Heaton
  * (http://www.jeffheaton.com) 1-2002
@@ -11,7 +16,9 @@ package oldcask.android.Kannda4Android.ocr.NeuralNetwork;
  * @version 1.0
  */
 
-public class KohonenNetwork extends Network {
+public class KohonenNetwork extends Network implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The weights of the output neurons base on the input from the input
@@ -57,6 +64,8 @@ public class KohonenNetwork extends Network {
 	 * The training set.
 	 */
 	protected TrainingSet train;
+
+	private String maps[];
 
 	/**
 	 * The constructor.
@@ -405,7 +414,7 @@ public class KohonenNetwork extends Network {
 		double bigerr[] = new double[1];
 		double bigcorr[] = new double[1];
 		KohonenNetwork bestnet; // Preserve best here
-
+		System.out.println("alive till here1");
 		totalError = 1.0;
 
 		for (tset = 0; tset < train.getTrainingSetCount(); tset++) {
@@ -416,7 +425,7 @@ public class KohonenNetwork extends Network {
 			}
 
 		}
-
+		System.out.println("alive till here2");
 		bestnet = new KohonenNetwork(inputNeuronCount, outputNeuronCount);
 
 		won = new int[outputNeuronCount];
@@ -429,6 +438,7 @@ public class KohonenNetwork extends Network {
 		rate = learnRate;
 
 		initialize();
+		System.out.println("alive till here3");
 		best_err = 1.e30;
 
 		// main loop:
@@ -444,7 +454,7 @@ public class KohonenNetwork extends Network {
 				best_err = totalError;
 				copyWeights(bestnet, this);
 			}
-
+			System.out.println("alive till here");
 			winners = 0;
 			for (i = 0; i < won.length; i++)
 				if (won[i] != 0)
@@ -479,6 +489,8 @@ public class KohonenNetwork extends Network {
 
 			if (rate > 0.01)
 				rate *= reduction;
+			
+			System.out.println("Alive  "+System.currentTimeMillis());
 
 		}
 
@@ -508,6 +520,34 @@ public class KohonenNetwork extends Network {
 			optr = outputWeights[i];
 			normalizeWeight(optr);
 		}
+	}
+	
+	public String[] mapNeurons(List<SampleData> downSampleDataList) {
+		maps = new String[outputNeuronCount];
+		double normfac[] = new double[1];
+		double synth[] = new double[1];
+
+		for (int i = 0; i < maps.length; i++) {
+			maps[i] = "?";
+		}
+		for (int i = 0; i < outputNeuronCount; i++) {
+			double input[] = new double[OpticalCharacterRecognizer.DOWNSAMPLE_WIDTH * OpticalCharacterRecognizer.DOWNSAMPLE_HEIGHT];
+			int idx = 0;
+			SampleData sampleData = (SampleData) downSampleDataList.get(i);
+			for (int y = 0; y < sampleData.getHeight(); y++) {
+				for (int x = 0; x < sampleData.getWidth(); x++) {
+					input[idx++] = sampleData.getData(x, y) ? .5 : -.5;
+				}
+			}
+
+			int best = winner(input, normfac, synth);
+			maps[best] = sampleData.getCharacters();
+		}
+		return maps;
+	}
+	
+	public String[] getMappedNeurons(){
+		return maps;
 	}
 
 }
