@@ -41,13 +41,10 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		trainKohonenNeuralNetwork();*/
 		long start = System.currentTimeMillis();
 		System.out.println(start);
-		FileInputStream f_in;
 		try {
-			f_in = new 
-				FileInputStream("\\sdcard\\network.data");
-			// Read object using ObjectInputStream
+			
 			ObjectInputStream obj_in = 
-				new ObjectInputStream (f_in);			
+				new ObjectInputStream (trainingData);			
 			Object obj = obj_in.readObject();
 			
 			kohonenNeuralNetwork = (KohonenNetwork) obj;

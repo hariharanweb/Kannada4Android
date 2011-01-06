@@ -31,7 +31,7 @@ public class Kannada4Android extends Activity {
 	}
 
 	private void trainTheNetwork() {
-		InputStream trainingData = getResources().openRawResource(R.raw.characters);
+		InputStream trainingData = getResources().openRawResource(R.raw.network);
 		AsyncTask<IOpticalCharacterRecognizer, Integer, Integer> trainerTask = new TrainerDataLoaderTask(
 				this,trainingData);
 		trainerTask.execute(ocr);
