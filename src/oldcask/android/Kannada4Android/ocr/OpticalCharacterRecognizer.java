@@ -1,6 +1,7 @@
 package oldcask.android.Kannada4Android.ocr;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,152 +25,45 @@ import android.util.Log;
 
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private static final String TAG_NAME = "OpticalCharacterRecogniser";
-
+	private KohonenNetwork kohonenNeuralNetwork;
+	private String mappedStrings[];
+	
 	public static final int DOWNSAMPLE_HEIGHT = 15;
 	public static final int DOWNSAMPLE_WIDTH = 15;
 
-	private ArrayList<SampleData> downSampleDataList = new ArrayList<SampleData>();
-	private KohonenNetwork kohonenNeuralNetwork;
-	String mappedStrings[];
-
-	int MAX_QUALITY = 100;
 
 	@Override
 	public void trainNeuralNetwork(InputStream trainingData) {
-		/*loadTrainingDataFromFile(trainingData);
-		trainKohonenNeuralNetwork();*/
-		long start = System.currentTimeMillis();
-		System.out.println(start);
 		try {
-			
-			ObjectInputStream obj_in = 
+			ObjectInputStream objectInputStream = 
 				new ObjectInputStream (trainingData);			
-			Object obj = obj_in.readObject();
+			Object serializedObject = objectInputStream.readObject();
 			
-			kohonenNeuralNetwork = (KohonenNetwork) obj;
+			kohonenNeuralNetwork = (KohonenNetwork) serializedObject;
 			mappedStrings = kohonenNeuralNetwork.getMappedNeurons();
-			for (int i = 0; i < mappedStrings.length; i++) {
-				System.out.println(mappedStrings[i]);
-			}
-			System.out.println(" hurray");
-			System.out.println("****************Total*********** " + mappedStrings.length);
-			System.out.println("sadjaksjdbask "+(System.currentTimeMillis()-start));
 		} catch (Exception e) {
+			Log.e(TAG_NAME, "Neural Network Training Error. Check Whether You Have The Proper Serialized Object" + e);
 			e.printStackTrace();
-		}
-	}
-
-	private void trainKohonenNeuralNetwork() {
-		try {
-			int inputNeuron = DOWNSAMPLE_HEIGHT * DOWNSAMPLE_WIDTH;
-			int outputNeuron = downSampleDataList.size();
-
-			TrainingSet set = new TrainingSet(inputNeuron, outputNeuron);
-			set.setTrainingSetCount(downSampleDataList.size());
-
-			populateTrainingSet(set);
-
-			kohonenNeuralNetwork = new KohonenNetwork(inputNeuron, outputNeuron);
-			kohonenNeuralNetwork.setTrainingSet(set);
-			kohonenNeuralNetwork.learn();
-			System.out.println("Training done!!!");
-			
-			
-			FileOutputStream f_out = new FileOutputStream("\\sdcard\\network1.data");
-			ObjectOutputStream obj_out = new ObjectOutputStream(f_out);
-			obj_out.writeObject(kohonenNeuralNetwork);
-			obj_out.flush();
-			obj_out.close();
-			
-			
-			mappedStrings = kohonenNeuralNetwork.mapNeurons(downSampleDataList);
-			System.out.println("Mapping done!!!");
-		} catch (Exception e) {
-			Log
-					.e(TAG_NAME,
-							"Kohonen Neural Network Training Not Done Properly");
-			e.printStackTrace();
-		}
-	}
-
-	private void populateTrainingSet(TrainingSet set) {
-		for (int index = 0; index < downSampleDataList.size(); index++) {
-			int idx = 0;
-			SampleData sampleData = (SampleData) downSampleDataList.get(index);
-			for (int y = 0; y < sampleData.getHeight(); y++) {
-				for (int x = 0; x < sampleData.getWidth(); x++) {
-					set.setInput(index, idx++, sampleData.getData(x, y) ? .5
-							: -.5);
-				}
-			}
-		}
-	}
-
-	
-
-	private void loadTrainingDataFromFile(InputStream trainingDataStream) {
-		try {
-			InputStreamReader streamReader = new InputStreamReader(
-					trainingDataStream);
-			BufferedReader bufferedReader = new BufferedReader(streamReader);
-			String lineInTheTrainingDataFile;
-
-			downSampleDataList.clear();
-
-			while ((lineInTheTrainingDataFile = bufferedReader.readLine()) != null) {
-				String[] characterPronunciationDownsampleDataArray = lineInTheTrainingDataFile
-						.split(":");
-				SampleData sampleData = new SampleData(
-						characterPronunciationDownsampleDataArray[0],
-						DOWNSAMPLE_WIDTH, DOWNSAMPLE_HEIGHT);
-
-				System.out.println("Text"
-						+ characterPronunciationDownsampleDataArray[0]
-						+ ": characters : "
-						+ characterPronunciationDownsampleDataArray[1]);
-
-				populateSampleData(characterPronunciationDownsampleDataArray,
-						sampleData);
-				downSampleDataList.add(sampleData);
-			}
-
-			bufferedReader.close();
-			streamReader.close();
-			System.out.println("Loaded from characters.txt file");
-		} catch (Exception e) {
-			Log.e(TAG_NAME, "Training Data File Not Found");
-			e.printStackTrace();
-		}
-	}
-
-	private void populateSampleData(
-			String[] characterPronunciationDownsampleDataArray, SampleData ds) {
-		int idx = 0;
-		for (int y = 0; y < ds.getHeight(); y++) {
-			for (int x = 0; x < ds.getWidth(); x++) {
-				ds.setData(x, y, characterPronunciationDownsampleDataArray[1]
-						.charAt(idx++) == '1');
-			}
 		}
 	}
 
 	@Override
-	public OCRResult recogniseImage(RgbImage localisedImage) {
+	public OCRResult recogniseImage(RgbImage localisedImage1) {
 		try {
 
 			/*
 			 * The following 3 lines will be removed..
 			 */
-			/*FileInputStream fis = new FileInputStream("data/img06.jpg");
-			jpegData = new byte[1000000];
-			fis.read(jpegData);*/
+			FileInputStream fis = new FileInputStream("data/c.jpg");
+			byte[] jpegData = new byte[1000000];
+			fis.read(jpegData);
 
-			/*RgbImage noiseremovedImage = removeNoise(jpegData);
+			RgbImage noiseremovedImage = removeNoise(jpegData);
 
 			RgbImage thresholdImage = thresholdImage(noiseremovedImage);
 			
 
-			RgbImage localisedImage = localiseImage(thresholdImage);*/
+			RgbImage localisedImage = localiseImage(thresholdImage);
 
 			SegmentedImageQueue PicQueue = segmentImage(localisedImage);
 
@@ -246,7 +140,8 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		RgbImage localisedImage = actions.localiseImageByWidth();
 		localisedImage = actions.localiseImageByHeight(localisedImage,
 				Threshold.thresholdIterative(localisedImage));
-		RgbImageAndroid.toFile(null, localisedImage, MAX_QUALITY,
+//		localisedImage = actions.localiseImageByWidth();
+		RgbImageAndroid.toFile(null, localisedImage, 100,
 				"perfected.jpg");
 		System.out.println("*************Localisation Done *************");
 		return localisedImage;
@@ -256,7 +151,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		boolean[][] noiseRemovedThresholdedBoolean = Threshold
 				.thresholdIterative(noiseremovedImage);
 		RgbImageAndroid.toFile(null, Threshold
-				.makeImage(noiseRemovedThresholdedBoolean), MAX_QUALITY,
+				.makeImage(noiseRemovedThresholdedBoolean), 100,
 				"thresholded1.jpg");
 		System.out.println("Thresholding Done after Noise Removal");
 		return Threshold.makeImage(noiseRemovedThresholdedBoolean);

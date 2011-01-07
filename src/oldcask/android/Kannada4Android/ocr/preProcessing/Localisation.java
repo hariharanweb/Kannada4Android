@@ -8,7 +8,7 @@ import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import android.util.Log;
 
 public class Localisation {
-	private static final int MIN_NUMBER_OF_PIXELS_THRESHOLD = 0;
+	private static final int HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD = 0;
 	private static final int WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD = 2;
 	int horizontalStrength[];
 	int verticalStrength[];
@@ -157,7 +157,7 @@ public class Localisation {
 			e.printStackTrace();
 		}
 		// Print(Threshold.threshold(imageToBeLocalised, 0.75f, 0.15f));
-		refreshData(inputImage, Threshold.thresholdIterative(inputImage));
+		refreshData(imageToBeLocalised, Threshold.thresholdIterative(imageToBeLocalised));
 		return imageToBeLocalised;
 	}
 
@@ -167,7 +167,7 @@ public class Localisation {
 		found = false;
 		while (!found & j < height) {
 			bottomEnd = j++;
-			if (horizontalStrength[bottomEnd] <= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (horizontalStrength[bottomEnd] <= HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -180,7 +180,7 @@ public class Localisation {
 		int j = height/2;
 		while (!found & j > 0) {
 			topEnd = j--;
-			if (horizontalStrength[topEnd] <= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (horizontalStrength[topEnd] <= HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
