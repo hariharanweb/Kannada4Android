@@ -1,7 +1,6 @@
 package oldcask.android.Kannada4Android.ocr;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -197,7 +196,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			boolean FromQueue[][] = PicQueue.getArray(x);
 			for (int i = 0; i < FromQueue.length; i++) {
 				for (int j = 0; j < FromQueue[0].length; j++) {
-					input[idx++] = (FromQueue[i][j] == true) ? .5 : -.5;
+					input[idx++] = (FromQueue[j][i] == true) ? .5 : -.5;
 				}
 			}
 
