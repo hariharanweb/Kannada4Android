@@ -26,8 +26,8 @@ import android.util.Log;
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private static final String TAG_NAME = "OpticalCharacterRecogniser";
 
-	public static final int DOWNSAMPLE_HEIGHT = 10;
-	public static final int DOWNSAMPLE_WIDTH = 10;
+	public static final int DOWNSAMPLE_HEIGHT = 15;
+	public static final int DOWNSAMPLE_WIDTH = 15;
 
 	private ArrayList<SampleData> downSampleDataList = new ArrayList<SampleData>();
 	private KohonenNetwork kohonenNeuralNetwork;
