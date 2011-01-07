@@ -1,19 +1,15 @@
 package oldcask.android.Kannada4Android.ocr.preProcessing;
 
-import java.io.File;
-import java.io.PrintStream;
-
-import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
-import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
-
-import android.util.Log;
-
 import jjil.algorithm.RgbCrop;
 import jjil.core.Error;
 import jjil.core.RgbImage;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
+import android.util.Log;
 
 public class Localisation {
-	private static final int MIN_NUMBER_OF_PIXELS_THRESHOLD = 5;
+	private static final int MIN_NUMBER_OF_PIXELS_THRESHOLD = 0;
+	private static final int WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD = 2;
 	int horizontalStrength[];
 	int verticalStrength[];
 	RgbImage inputImage;
@@ -86,7 +82,7 @@ public class Localisation {
 		j = width - 1;
 		while (!found && j >= 0) {
 			rightEnd = j--;
-			if (verticalStrength[rightEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (verticalStrength[rightEnd] >= WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -98,7 +94,7 @@ public class Localisation {
 		boolean found = false;
 		while (!found && j < width) {
 			leftEnd = j++;
-			if (verticalStrength[leftEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (verticalStrength[leftEnd] >= WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -199,12 +195,12 @@ public class Localisation {
 	 *            the boolean representation of the image to be printed
 	 */
 	public static void Print(boolean inputBoolean[][]) {
-		File f = new File("data/fullimage.txt");
 		try {
+		/*	File f = new File("data/fullimage.txt");
 			PrintStream ps = new PrintStream(f);
 
-			for (int i = 0; i < inputBoolean.length/* h */; i++) {
-				for (int j = 0; j < inputBoolean[0].length/* w */; j++) {
+			for (int i = 0; i < inputBoolean.length h ; i++) {
+				for (int j = 0; j < inputBoolean[0].length w ; j++) {
 					if (inputBoolean[i][j] == true)
 						ps.print("@");
 					else
@@ -213,7 +209,7 @@ public class Localisation {
 				ps.println("|" + (i));
 			}
 			ps.close();
-
+*/
 			for (int i = 0; i < inputBoolean.length/* h */; i++) {
 				for (int j = 0; j < inputBoolean[0].length/* w */; j++) {
 					if (inputBoolean[i][j] == true)
