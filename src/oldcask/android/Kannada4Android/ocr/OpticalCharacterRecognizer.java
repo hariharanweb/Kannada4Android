@@ -1,13 +1,7 @@
 package oldcask.android.Kannada4Android.ocr;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 
 import jjil.core.RgbImage;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
@@ -18,8 +12,6 @@ import oldcask.android.Kannada4Android.ocr.preProcessing.RemoveNoise;
 import oldcask.android.Kannada4Android.ocr.recognition.Segmentation;
 import oldcask.android.Kannada4Android.ocr.recognition.SegmentedImageQueue;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.KohonenNetwork;
-import oldcask.android.Kannda4Android.ocr.NeuralNetwork.SampleData;
-import oldcask.android.Kannda4Android.ocr.NeuralNetwork.TrainingSet;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.util.Log;
