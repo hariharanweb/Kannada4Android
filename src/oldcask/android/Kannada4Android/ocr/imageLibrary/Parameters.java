@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr.imageLibrary;
+package oldcask.android.Kannada4Android.ocr.imagelibrary;
 
 public class Parameters {
 	public static final int INITIAL_THRESHOLD = 136;

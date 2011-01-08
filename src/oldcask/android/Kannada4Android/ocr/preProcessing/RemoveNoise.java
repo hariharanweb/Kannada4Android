@@ -1,7 +1,7 @@
-package oldcask.android.Kannada4Android.ocr.preProcessing;
+package oldcask.android.Kannada4Android.ocr.preprocessing;
 
-import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
-import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
+import oldcask.android.Kannada4Android.ocr.imagelibrary.Parameters;
+import oldcask.android.Kannada4Android.ocr.imagelibrary.RgbImageAndroid;
 import jjil.core.RgbImage;
 import android.graphics.Bitmap;
 

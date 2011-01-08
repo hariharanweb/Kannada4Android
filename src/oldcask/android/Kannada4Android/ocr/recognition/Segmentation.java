@@ -1,8 +1,8 @@
 package oldcask.android.Kannada4Android.ocr.recognition;
 
-import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
-import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
-import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
+import oldcask.android.Kannada4Android.ocr.imagelibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imagelibrary.Parameters;
+import oldcask.android.Kannada4Android.ocr.imagelibrary.Threshold;
 import jjil.algorithm.RgbCrop;
 import jjil.core.Error;
 import jjil.core.RgbImage;
