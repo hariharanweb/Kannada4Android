@@ -5,6 +5,8 @@ public class Parameters {
 	public static final int HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD = 0;
 	public static final int WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD = 0;
 	public static final int DOWNSAMPLE_BOX_STRENGTH_NEEDED = 2;
+	public static final int MIN_PIXEL_REQUIRED_FOR_A_LETTER_TO_EXIST = 2;
+	public static final int MAX_CHARACTERS_RECOGNISABLE = 20;
 	
 	public static final int DOWNSAMPLE_HEIGHT = 15;
 	public static final int DOWNSAMPLE_WIDTH = 15;
@@ -13,5 +15,7 @@ public class Parameters {
 	
 	public static final String TAG_LOCALISATION = "Localisation";
 	public static final String TAG_THRESHOLD = "Threshold";
+	public static final String TAG_SEGMENTATION = "Segmentation";
+	public static final int MIN_CHARACTER_INTER_SPACING = 4;
 
 }

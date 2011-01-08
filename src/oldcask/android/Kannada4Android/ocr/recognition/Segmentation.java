@@ -1,6 +1,7 @@
 package oldcask.android.Kannada4Android.ocr.recognition;
 
 import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import jjil.algorithm.RgbCrop;
 import jjil.core.Error;
@@ -8,26 +9,14 @@ import jjil.core.RgbImage;
 import android.util.Log;
 
 public class Segmentation {
-	private static final int MIN_PIXEL_REQUIRED_FOR_A_LETTER_TO_EXIST = 2;
-	private static final int MAX_CHARACTERS = 20;
-	private static final String TAG_SEGMENTATION = "Segmentation";
+	private static final float MAX_SEGMENT_THRESHOLD = 0.75f;
 	private RgbImage inputImage;
+	boolean inputBoolean[][];
 
 	int horizontalStrength[];
 	int verticalStrength[];
-	
-	boolean inputBoolean[][];
-
 	int height, width;
 
-	/**
-	 * 
-	 * @param inputImage
-	 *            The input RgbImage on which the operations will be done
-	 * @param inputBoolean
-	 *            Boolean representation of the thresholded version of the input
-	 *            image
-	 */
 	public Segmentation(RgbImage inputImage, boolean inputBoolean[][]) {
 		this.inputImage = inputImage;
 		this.inputBoolean = inputBoolean;
@@ -43,16 +32,16 @@ public class Segmentation {
 		}
 	}
 
-	public void segment(SegmentedImageQueue PicQueue) {
+	public void segment(SegmentedImageQueue segmentedImageQueue) {
 		int Lines[] = new int[width];
-		int from[] = new int[MAX_CHARACTERS];
-		int to[] = new int[MAX_CHARACTERS];
-		int lineWidth[] = new int[MAX_CHARACTERS];
+		int from[] = new int[Parameters.MAX_CHARACTERS_RECOGNISABLE];
+		int to[] = new int[Parameters.MAX_CHARACTERS_RECOGNISABLE];
+		int lineWidth[] = new int[Parameters.MAX_CHARACTERS_RECOGNISABLE];
 		int count = 0, index = 0;
 		Lines[++count] = 0;
 
 		for (int j = 0; j < width; j++) {
-			if (verticalStrength[j] < MIN_PIXEL_REQUIRED_FOR_A_LETTER_TO_EXIST)
+			if (verticalStrength[j] < Parameters.MIN_PIXEL_REQUIRED_FOR_A_LETTER_TO_EXIST)
 				Lines[count++] = j;
 		}
 		Lines[count] = width;
@@ -62,28 +51,26 @@ public class Segmentation {
 				from[index] = Lines[j];
 				to[index] = Lines[j + 1];
 				lineWidth[index] = to[index] - from[index];
-				System.out.println("Printing Segment " + from[index] + " "
-						+ to[index] + " " + lineWidth[index] + " " + index);
 
 				try {
+					if(lineWidth[index] < Parameters.MIN_CHARACTER_INTER_SPACING)
+						continue;
+					
 					RgbImage segment = inputImage;
 					RgbCrop croppedImage = new RgbCrop(from[index], 0, lineWidth[index],
 							height);
 					croppedImage.push(inputImage);
 					if (!croppedImage.isEmpty())
 						segment = (RgbImage) croppedImage.getFront();
-					
-					System.out.println("***************LineWidth = " + lineWidth[index] + " Threshhold = "+Threshold.threshold(segment));
 					 
-					if (lineWidth[index] < 4 || Threshold.threshold(segment) > 0.75f)
+					if (Threshold.threshold(segment) > MAX_SEGMENT_THRESHOLD)
 						continue;
+					
 					boolean subArray[][] = getSubArray(inputBoolean,from[index], to[index], 0, height);
-					PicQueue.insert(segment, subArray);
+					segmentedImageQueue.insert(segment, subArray);
 					index++;
 				} catch (Error e) {
-					System.out.println(" Error in height in Rgbcrop in Segmentation");
-					Log.e(TAG_SEGMENTATION,
-							"Error in height in Rgbcrop in Segmentation");
+					Log.e(Parameters.TAG_SEGMENTATION,"Error in height in Rgbcrop in Segmentation");
 					e.printStackTrace();
 				}
 			}
@@ -94,7 +81,7 @@ public class Segmentation {
 	 * Two Dimensional version of System.arraycopy() Copies a particular part of
 	 * the two dimensional boolean array into another
 	 * 
-	 * @param t
+	 * @param inputBoolean
 	 *            The source array, of the form t[y][x]
 	 * @param x1
 	 *            The starting x position.
@@ -106,47 +93,13 @@ public class Segmentation {
 	 *            The ending y position
 	 * @return The copied array
 	 */
-	public boolean[][] getSubArray(boolean t[][], int x1, int x2, int y1, int y2) {
+	public boolean[][] getSubArray(boolean inputBoolean[][], int x1, int x2, int y1, int y2) {
 		boolean temp[][] = new boolean[y2 - y1][x2 - x1];
 		for (int i = y1, a = 0; i < y2; i++, a++) {
 			for (int j = x1, b = 0; j < x2; j++, b++) {
-				temp[a][b] = t[i][j];
+				temp[a][b] = inputBoolean[i][j];
 			}
 		}
 		return temp;
 	}
-
-	/**
-	 * Finds a split point on the image. For Images having 2 lines/Some random
-	 * stuff with the text.
-	 * 
-	 * @return the SplitPoint.
-	 */
-	public int shouldSplit() {
-		if (horizontalStrength[height / 2] < 5)
-			return height / 2;
-
-		boolean Split = false;
-		int j = height / 2;
-		while (!Split && j > height / 3) {
-			j--;
-			if (horizontalStrength[j] < 5)
-				Split = true;
-		}
-		if (Split == true)
-			return j;
-
-		Split = false;
-		j = height / 2;
-		while (!Split && j <= 2 * height / 3) {
-			j++;
-			if (horizontalStrength[j] < 5)
-				Split = true;
-		}
-		if (Split == true)
-			return j;
-
-		return (height - 1);
-	}
-
 }
