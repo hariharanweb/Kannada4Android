@@ -42,9 +42,9 @@ public class SegmentedImageQueue {
 		segmentsList.add(inputSegment);
 
 		boolean tempBoolean[][] = new boolean[inputBoolean.length + 4][inputBoolean[0].length + 4];
-		segmentThinner.adjust(inputBoolean, tempBoolean, inputBoolean.length, inputBoolean[0].length);
+		padFalse(inputBoolean, tempBoolean, inputBoolean.length, inputBoolean[0].length);
 
-		RgbImage TMP = segmentThinner.dothin(tempBoolean, tempBoolean[0].length,
+		RgbImage TMP = segmentThinner.thinningHilditch(tempBoolean, tempBoolean[0].length,
 				tempBoolean.length, LAYERS_TO_THIN);
 
 		if (TMP != null) {
@@ -61,7 +61,38 @@ public class SegmentedImageQueue {
 		downSampler[validSegments].DoDownSample(TMP, tempBoolean);
 		validSegments++;
 	}
+	/**
+	 * 
+	 * Adjust method pads the source boolean array with 2 rows of 'false' values
+	 * 
+	 * @param sourceBoolean
+	 *            The source array
+	 * @param resultBoolean
+	 *            The bigger resulting array
+	 * @param height
+	 *            Height of the array (t1.length)
+	 * @param width
+	 *            Width of the array (t1[0].length)
+	 * 
+	 * @return The padded array
+	 */
+	public boolean[][] padFalse(boolean sourceBoolean[][], boolean resultBoolean[][], int height, int width) {
 
+		for (int i = 0; i < width + 4; i++) {
+			resultBoolean[0][i] = false;
+			resultBoolean[height + 1][i] = false;
+		}
+
+		for (int j = 0; j < height + 4; j++) {
+			resultBoolean[j][0] = false;
+			resultBoolean[j][width + 1] = false;
+		}
+
+		for (int k = 0, ki = 2; k < height; k++, ki++)
+			for (int l = 0, li = 2; l < width; l++, li++)
+				resultBoolean[ki][li] = sourceBoolean[k][l];
+		return resultBoolean;
+	}
 	/**
 	 * Returns the nth element from the segmentsList Queue
 	 * 
