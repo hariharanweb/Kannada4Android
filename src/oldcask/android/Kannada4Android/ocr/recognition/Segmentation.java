@@ -9,7 +9,6 @@ import jjil.core.RgbImage;
 import android.util.Log;
 
 public class Segmentation {
-	private static final float MAX_SEGMENT_THRESHOLD = 0.75f;
 	private RgbImage inputImage;
 	boolean inputBoolean[][];
 
@@ -63,7 +62,7 @@ public class Segmentation {
 					if (!croppedImage.isEmpty())
 						segment = (RgbImage) croppedImage.getFront();
 					 
-					if (Threshold.threshold(segment) > MAX_SEGMENT_THRESHOLD)
+					if (Threshold.threshold(segment) > Parameters.MAX_SEGMENT_THRESHOLD)
 						continue;
 					
 					boolean subArray[][] = getSubArray(inputBoolean,from[index], to[index], 0, height);
