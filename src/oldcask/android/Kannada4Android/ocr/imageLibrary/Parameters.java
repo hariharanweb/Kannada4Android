@@ -17,5 +17,6 @@ public class Parameters {
 	public static final String TAG_THRESHOLD = "Threshold";
 	public static final String TAG_SEGMENTATION = "Segmentation";
 	public static final int MIN_CHARACTER_INTER_SPACING = 4;
+	public static final int LAYERS_TO_THIN = 2;
 
 }

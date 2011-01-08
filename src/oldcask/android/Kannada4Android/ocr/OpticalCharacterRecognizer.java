@@ -10,7 +10,7 @@ import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
 import oldcask.android.Kannada4Android.ocr.preProcessing.RemoveNoise;
 import oldcask.android.Kannada4Android.ocr.recognition.Segmentation;
-import oldcask.android.Kannada4Android.ocr.recognition.SegmentedImageQueue;
+import oldcask.android.Kannada4Android.ocr.recognition.SegmentedImageProcessor;
 import oldcask.android.Kannda4Android.ocr.NeuralNetwork.KohonenNetwork;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -54,7 +54,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 
 			RgbImage localisedImage = localiseImage(thresholdImage);*/
 
-			SegmentedImageQueue PicQueue = segmentImage(localisedImage);
+			SegmentedImageProcessor PicQueue = segmentImage(localisedImage);
 
 			StringBuilder recognisedString = recogniseStrings(PicQueue);
 
@@ -70,13 +70,13 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return new OCRResult("", "Sorry!! Somethings gone a bit wrong");
 	}
 
-	private StringBuilder recogniseStrings(SegmentedImageQueue PicQueue) {
+	private StringBuilder recogniseStrings(SegmentedImageProcessor PicQueue) {
 		double input[] = new double[Parameters.DOWNSAMPLE_WIDTH * Parameters.DOWNSAMPLE_HEIGHT];
 		String recognisedStrings[] = new String[20];
 		int x;
-		for (x = 0; x < PicQueue.getSize(); x++) {
+		for (x = 0; x < PicQueue.getNumberOfValidSegments(); x++) {
 			int idx = 0;
-			boolean FromQueue[][] = PicQueue.getArray(x);
+			boolean FromQueue[][] = PicQueue.getDownsample(x);
 			for (int i = 0; i < FromQueue.length; i++) {
 				for (int j = 0; j < FromQueue[0].length; j++) {
 					input[idx++] = (FromQueue[j][i] == true) ? .5 : -.5;
@@ -99,7 +99,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return finalRecognisedString;
 	}
 
-	private SegmentedImageQueue segmentImage(RgbImage localisedImage) {
+	private SegmentedImageProcessor segmentImage(RgbImage localisedImage) {
 		boolean localisedThresholdedBoolean[][] = Threshold
 				.thresholdIterative(localisedImage);
 		RgbImage localisedThresholdedImage = Threshold
@@ -116,11 +116,11 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		//
 		// System.out.println("No of halves = " + halves);
 
-		SegmentedImageQueue PicQueue = new SegmentedImageQueue();
-		Splitter.segment(PicQueue);
+		SegmentedImageProcessor segmentedImageProcessor = new SegmentedImageProcessor();
+		Splitter.segment(segmentedImageProcessor);
 
-		System.out.println("Ze Queue Holds " + PicQueue.getSize());
-		return PicQueue;
+		System.out.println("Ze Queue Holds " + segmentedImageProcessor.getNumberOfValidSegments());
+		return segmentedImageProcessor;
 	}
 
 	public RgbImage localiseImage(RgbImage thresholdImage){

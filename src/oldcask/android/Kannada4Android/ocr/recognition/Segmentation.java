@@ -32,7 +32,7 @@ public class Segmentation {
 		}
 	}
 
-	public void segment(SegmentedImageQueue segmentedImageQueue) {
+	public void segment(SegmentedImageProcessor segmentedImageProcessor) {
 		int Lines[] = new int[width];
 		int from[] = new int[Parameters.MAX_CHARACTERS_RECOGNISABLE];
 		int to[] = new int[Parameters.MAX_CHARACTERS_RECOGNISABLE];
@@ -67,7 +67,7 @@ public class Segmentation {
 						continue;
 					
 					boolean subArray[][] = getSubArray(inputBoolean,from[index], to[index], 0, height);
-					segmentedImageQueue.insert(segment, subArray);
+					segmentedImageProcessor.process(segment, subArray);
 					index++;
 				} catch (Error e) {
 					Log.e(Parameters.TAG_SEGMENTATION,"Error in height in Rgbcrop in Segmentation");
