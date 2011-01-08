@@ -48,13 +48,13 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	}
 
 	@Override
-	public OCRResult recogniseImage(RgbImage localisedImage1) {
+	public OCRResult recogniseImage(RgbImage localisedImage) {
 		try {
 
 			/*
 			 * The following 3 lines will be removed..
 			 */
-			FileInputStream fis = new FileInputStream("data/c.jpg");
+			/*FileInputStream fis = new FileInputStream("data/img06.jpg");
 			byte[] jpegData = new byte[1000000];
 			fis.read(jpegData);
 
@@ -63,7 +63,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			RgbImage thresholdImage = thresholdImage(noiseremovedImage);
 			
 
-			RgbImage localisedImage = localiseImage(thresholdImage);
+			RgbImage localisedImage = localiseImage(thresholdImage);*/
 
 			SegmentedImageQueue PicQueue = segmentImage(localisedImage);
 
@@ -137,12 +137,14 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	public RgbImage localiseImage(RgbImage thresholdImage){
 		Localisation actions = new Localisation(thresholdImage,
 				Threshold.thresholdIterative(thresholdImage));
+		/* Doing Localisation By Width, Height and then again Width 
+		 * Removes Some Shadows and Gives Significant improvement in the result
+		 */
 		RgbImage localisedImage = actions.localiseImageByWidth();
-		localisedImage = actions.localiseImageByHeight(localisedImage,
-				Threshold.thresholdIterative(localisedImage));
-//		localisedImage = actions.localiseImageByWidth();
-		RgbImageAndroid.toFile(null, localisedImage, 100,
-				"perfected.jpg");
+		localisedImage = actions.localiseImageByHeight();
+		localisedImage = actions.localiseImageByWidth();
+		/*RgbImageAndroid.toFile(null, localisedImage, 100,
+				"perfected.jpg");*/
 		System.out.println("*************Localisation Done *************");
 		return localisedImage;
 	}
@@ -150,9 +152,9 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	public RgbImage thresholdImage(RgbImage noiseremovedImage) {
 		boolean[][] noiseRemovedThresholdedBoolean = Threshold
 				.thresholdIterative(noiseremovedImage);
-		RgbImageAndroid.toFile(null, Threshold
+		/*RgbImageAndroid.toFile(null, Threshold
 				.makeImage(noiseRemovedThresholdedBoolean), 100,
-				"thresholded1.jpg");
+				"thresholded1.jpg");*/
 		System.out.println("Thresholding Done after Noise Removal");
 		return Threshold.makeImage(noiseRemovedThresholdedBoolean);
 	}

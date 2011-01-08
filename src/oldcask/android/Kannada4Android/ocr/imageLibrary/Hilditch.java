@@ -194,15 +194,15 @@ public class Hilditch {
 						else
 							c *= 0; // System.out.print("2 ");//Condition 2
 
-						if (Threshold.val(sourceBoolean[i - 1][j]) * Threshold.val(sourceBoolean[i][j + 1])
-								* Threshold.val(sourceBoolean[i][j - 1]) == 0
+						if (val(sourceBoolean[i - 1][j]) * val(sourceBoolean[i][j + 1])
+								* val(sourceBoolean[i][j - 1]) == 0
 								|| checka(sourceBoolean, i - 1, j) != 1)
 							c *= 1; // } //Condition 3
 						else
 							c *= 0; // System.out.print("3 ");
 
-						if (Threshold.val(sourceBoolean[i - 1][j]) * Threshold.val(sourceBoolean[i][j + 1])
-								* Threshold.val(sourceBoolean[i + 1][j]) == 0
+						if (val(sourceBoolean[i - 1][j]) * val(sourceBoolean[i][j + 1])
+								* val(sourceBoolean[i + 1][j]) == 0
 								|| checka(sourceBoolean, i, j + 1) != 1)
 							c *= 1; // } //Condition 4
 						else
@@ -234,9 +234,9 @@ public class Hilditch {
 	void checknCorrect(boolean temp[][]) {
 		int s1 = 0, s2 = 0, sh = 0;
 		for (int i = 0; i < temp[0].length; i++) {
-			s2 += Threshold.val(temp[1][i]);
-			sh += Threshold.val(temp[temp.length - 2][i]);
-			s1 += Threshold.val(temp[2][i]);
+			s2 += val(temp[1][i]);
+			sh += val(temp[temp.length - 2][i]);
+			s1 += val(temp[2][i]);
 		}
 		if (s1 == 0) {
 			for (int i = 0; i < temp[0].length; i++) {
@@ -321,6 +321,13 @@ public class Hilditch {
 		if (t[i - 1][j - 1] == false && t[i - 1][j] == true)
 			count++; // p9 p2
 		return count;
+	}
+	
+	public static int val(boolean in) {
+		if (in == true)
+			return 1;
+		else
+			return 0;
 	}
 
 }
