@@ -3,7 +3,7 @@ package oldcask.android.Kannda4Android.ocr.NeuralNetwork;
 import java.io.Serializable;
 import java.util.List;
 
-import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 
 /**
  * Java Neural Network Example Handwriting Recognition by Jeff Heaton
@@ -531,7 +531,7 @@ public class KohonenNetwork extends Network implements Serializable {
 			maps[i] = "?";
 		}
 		for (int i = 0; i < outputNeuronCount; i++) {
-			double input[] = new double[OpticalCharacterRecognizer.DOWNSAMPLE_WIDTH * OpticalCharacterRecognizer.DOWNSAMPLE_HEIGHT];
+			double input[] = new double[Parameters.DOWNSAMPLE_WIDTH * Parameters.DOWNSAMPLE_HEIGHT];
 			int idx = 0;
 			SampleData sampleData = (SampleData) downSampleDataList.get(i);
 			for (int y = 0; y < sampleData.getHeight(); y++) {

@@ -1,31 +1,16 @@
 package oldcask.android.Kannada4Android.ocr.recognition;
 
-import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizer;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 import jjil.core.RgbImage;
 
 
 public class DownSample {
 
-	private static final int BOX_STRENGTH_NEEDED = 2;
+	private boolean downSample[][];
 
-	static final int HGT = OpticalCharacterRecognizer.DOWNSAMPLE_HEIGHT;
-
-	static final int WDT = OpticalCharacterRecognizer.DOWNSAMPLE_WIDTH;
-	
-
-	/**
-	 * An array of HGT x WDT booleans. Each 2D array represents the downsampled
-	 * version of the characters on the Number Plate
-	 */
-	boolean downSample[][];
-
-	/**
-	 * Empty constructor of the class
-	 * 
-	 */
 	public DownSample() {
-		downSample = new boolean[HGT][WDT];
+		downSample = new boolean[Parameters.DOWNSAMPLE_HEIGHT][Parameters.DOWNSAMPLE_WIDTH];
 	}
 
 	/**
@@ -38,16 +23,13 @@ public class DownSample {
 	 *            The boolean representation of the thresholded segemnt
 	 * 
 	 */
-	public void DoDownSample(RgbImage inputSegment, boolean inputBoolean[][]) {
-		double ratioY = (double) inputBoolean.length / HGT;
-		double ratioX = (double) inputBoolean[0].length / WDT;
+	public void downSample(RgbImage inputSegment, boolean inputBoolean[][]) {
+		double ratioY = (double) inputBoolean.length / Parameters.DOWNSAMPLE_HEIGHT;
+		double ratioX = (double) inputBoolean[0].length / Parameters.DOWNSAMPLE_WIDTH;
 
-		// System.out.println(t.length+" "+t[0].length+" "+ratioY+" "+ratioX+"
-		// "+(int)HGT+" "+(int)WDT);
-
-		for (int i = 0; i < (int) HGT; i++) {
+		for (int i = 0; i < (int) Parameters.DOWNSAMPLE_HEIGHT; i++) {
 			System.out.print(i + "  ");
-			for (int j = 0; j < (int) WDT; j++) {
+			for (int j = 0; j < (int) Parameters.DOWNSAMPLE_WIDTH; j++) {
 				downSample[i][j] = isBlack(i, j, ratioY, ratioX, inputBoolean);
 				if (downSample[i][j] == true)
 					System.out.print("#");
@@ -81,16 +63,12 @@ public class DownSample {
 			if ((j + box_y * box_width) < inputBoolean[0].length)
 				str += HistogramAnalysis.getVerticalStrength(inputBoolean, ((int) Math.floor(box_x * box_height)),
 						((int) Math.floor(j + box_y * box_width)), ((int) Math.ceil(box_height)));
-		if (str >= BOX_STRENGTH_NEEDED)
+		if (str >= Parameters.DOWNSAMPLE_BOX_STRENGTH_NEEDED)
 			return true;
 		else
 			return false;
 	}
 
-	/**
-	 * 
-	 * @return Downsampled boolean representation
-	 */
 	public boolean[][] getDownSampled() {
 		return downSample;
 	}

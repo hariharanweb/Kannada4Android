@@ -1,11 +1,11 @@
 package oldcask.android.Kannada4Android.ocr.preProcessing;
 
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import jjil.core.RgbImage;
 import android.graphics.Bitmap;
 
 public class RemoveNoise {
-	private static final double NOISE_SUBTRACT_RATIO_THRESHOLD = 0.60;
 	private RgbImage imageToRemoveNoise;
 
 	public RemoveNoise(RgbImage imageToRemoveNoise) {
@@ -25,7 +25,7 @@ public class RemoveNoise {
 		
 		double ratioOfNoiseSubtract = noiseSubtract(imageToRemoveNoise,inputRgbImage);
 
-		if ((ratioOfNoiseSubtract > NOISE_SUBTRACT_RATIO_THRESHOLD)) {
+		if ((ratioOfNoiseSubtract > Parameters.NOISE_SUBTRACT_RATIO_THRESHOLD)) {
 			return inputRgbImage;
 		} else {
 			return imageToRemoveNoise;

@@ -58,7 +58,7 @@ public class SegmentedImageQueue {
 			return;
 		}
 		downSampler[validSegments] = new DownSample();
-		downSampler[validSegments].DoDownSample(TMP, tempBoolean);
+		downSampler[validSegments].downSample(TMP, tempBoolean);
 		validSegments++;
 	}
 	/**

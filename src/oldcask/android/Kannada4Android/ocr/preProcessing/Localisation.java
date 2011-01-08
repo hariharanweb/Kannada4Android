@@ -4,12 +4,11 @@ import jjil.algorithm.RgbCrop;
 import jjil.core.Error;
 import jjil.core.RgbImage;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import android.util.Log;
 
 public class Localisation {
-	private static final int HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD = 0;
-	private static final int WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD = 2;
 	int horizontalStrength[];
 	int verticalStrength[];
 	RgbImage inputImage;
@@ -58,10 +57,10 @@ public class Localisation {
 				inputImage = (RgbImage) croppedImage.getFront();
 			
 		} catch (Exception e) {
-			Log.e("Localisation", "Error in Width Localisation " + e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Width Localisation " + e);
 			e.printStackTrace();
 		} catch (Error e) {
-			Log.e("Localisation", "Error in Pipeline of RgbCrop in Localisation By width " + e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Pipeline of RgbCrop in Localisation By width " + e);
 			e.printStackTrace();
 		}
 
@@ -76,7 +75,7 @@ public class Localisation {
 		boolean found = false;
 		while (!found && j >= 0) {
 			rightEnd = j--;
-			if (verticalStrength[rightEnd] >= WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (verticalStrength[rightEnd] >= Parameters.WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -90,7 +89,7 @@ public class Localisation {
 		boolean found = false;
 		while (!found && j < width) {
 			leftEnd = j++;
-			if (verticalStrength[leftEnd] >= WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (verticalStrength[leftEnd] >= Parameters.WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -127,10 +126,10 @@ public class Localisation {
 				inputImage = (RgbImage) croppedImage.getFront();
 			
 		} catch (Exception e) {
-			Log.e("Localisation", "Error in Height Localisation" + e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Height Localisation" + e);
 			e.printStackTrace();
 		} catch (Error e) {
-			Log.e("Localisation", "Error in Pipeline of RgbCrop in Localisation By Height " + e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Pipeline of RgbCrop in Localisation By Height " + e);
 			e.printStackTrace();
 		}
 		
@@ -145,7 +144,7 @@ public class Localisation {
 		boolean found = false;
 		while (!found & j < height) {
 			bottomEnd = j++;
-			if (horizontalStrength[bottomEnd] <= HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (horizontalStrength[bottomEnd] <= Parameters.HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -159,7 +158,7 @@ public class Localisation {
 		int j = height/2;
 		while (!found & j > 0) {
 			topEnd = j--;
-			if (horizontalStrength[topEnd] <= HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (horizontalStrength[topEnd] <= Parameters.HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)

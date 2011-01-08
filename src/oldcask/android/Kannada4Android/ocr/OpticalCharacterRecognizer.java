@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import jjil.core.RgbImage;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
@@ -28,10 +29,6 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private KohonenNetwork kohonenNeuralNetwork;
 	private String mappedStrings[];
 	
-	public static final int DOWNSAMPLE_HEIGHT = 15;
-	public static final int DOWNSAMPLE_WIDTH = 15;
-
-
 	@Override
 	public void trainNeuralNetwork(InputStream trainingData) {
 		try {
@@ -54,7 +51,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			/*
 			 * The following 3 lines will be removed..
 			 */
-			/*FileInputStream fis = new FileInputStream("data/img06.jpg");
+			/*FileInputStream fis = new FileInputStream("data/D.jpg");
 			byte[] jpegData = new byte[1000000];
 			fis.read(jpegData);
 
@@ -82,7 +79,7 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	}
 
 	private StringBuilder recogniseStrings(SegmentedImageQueue PicQueue) {
-		double input[] = new double[DOWNSAMPLE_WIDTH * DOWNSAMPLE_HEIGHT];
+		double input[] = new double[Parameters.DOWNSAMPLE_WIDTH * Parameters.DOWNSAMPLE_HEIGHT];
 		String recognisedStrings[] = new String[20];
 		int x;
 		for (x = 0; x < PicQueue.getSize(); x++) {

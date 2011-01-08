@@ -7,12 +7,9 @@ import android.util.Log;
 
 public class Threshold {
 
-	private static final String TAG_THRESHOLD = "Threshold";
-	private static int INITIAL_THRESHOLD = 136;
-
 	public static RgbImage makeImage(boolean booleanRepresentationOfImage[][]) {
 		if (booleanRepresentationOfImage == null) {
-			Log.e(TAG_THRESHOLD,"Input boolean is NULL");
+			Log.e(Parameters.TAG_THRESHOLD,"Input boolean is NULL");
 			return null;
 		}
 		int height = booleanRepresentationOfImage.length;
@@ -42,7 +39,7 @@ public class Threshold {
 		int area = width * height;
 		
 		/* Step 1 : To Choose Arbitrary Threshold */
-		int iterativeThreshold = INITIAL_THRESHOLD, newThreshold = INITIAL_THRESHOLD;
+		int iterativeThreshold = Parameters.INITIAL_THRESHOLD, newThreshold = Parameters.INITIAL_THRESHOLD;
 
 		do {
 			iterativeThreshold = newThreshold;
@@ -101,7 +98,7 @@ public class Threshold {
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				x = Math.abs(tempBitmapImage.getPixel(i, j)) / 100000;
-				if (x > INITIAL_THRESHOLD)
+				if (x > Parameters.INITIAL_THRESHOLD)
 					blackPixelCount++;
 			}
 		}
