@@ -42,6 +42,11 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		camera.startPreview();
+		camera.autoFocus(new Camera.AutoFocusCallback() {
+			public void onAutoFocus(boolean success, Camera camera) {
+				//do nothing
+			}
+		});
 	}
 
 	@Override
