@@ -36,10 +36,10 @@ public class Segmentation {
 		horizontalStrength = new int[height];
 		verticalStrength = new int[width];
 		for (int i = 0; i < height; i++) {
-			horizontalStrength[i] = HistogramAnalysis.getStrengthH(inputBoolean, i, 0,width);
+			horizontalStrength[i] = HistogramAnalysis.getHorizontalStrength(inputBoolean, i, 0,width);
 		}
 		for (int j = 0; j < width; j++) {
-			verticalStrength[j] = HistogramAnalysis.getStrengthV(inputBoolean, 0,j, height);
+			verticalStrength[j] = HistogramAnalysis.getVerticalStrength(inputBoolean, 0,j, height);
 		}
 	}
 
@@ -74,7 +74,7 @@ public class Segmentation {
 						segment = (RgbImage) croppedImage.getFront();
 					
 					System.out.println("***************LineWidth = " + lineWidth[index] + " Threshhold = "+Threshold.threshold(segment));
-					
+					 
 					if (lineWidth[index] < 4 || Threshold.threshold(segment) > 0.75f)
 						continue;
 					boolean subArray[][] = getSubArray(inputBoolean,from[index], to[index], 0, height);

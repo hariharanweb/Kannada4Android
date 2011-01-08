@@ -32,11 +32,11 @@ public class Localisation {
 		horizontalStrength = new int[height];
 		verticalStrength = new int[width];
 		for (int i = 0; i < height; i++) {
-			horizontalStrength[i] = HistogramAnalysis.getStrengthH(inputBoolean, i, 0,
+			horizontalStrength[i] = HistogramAnalysis.getHorizontalStrength(inputBoolean, i, 0,
 					width);
 		}
 		for (int i = 0; i < width; i++)
-			verticalStrength[i] = HistogramAnalysis.getStrengthV(
+			verticalStrength[i] = HistogramAnalysis.getVerticalStrength(
 					inputBoolean, 0, i, height);
 	}
 
@@ -104,20 +104,15 @@ public class Localisation {
 		height = inputImage.getHeight();
 		width = inputImage.getWidth();
 		for (int i = 0; i < height; i++) {
-			horizontalStrength[i] = HistogramAnalysis.getStrengthH(inputBoolean, i, 0, width);
+			horizontalStrength[i] = HistogramAnalysis.getHorizontalStrength(inputBoolean, i, 0, width);
 		}
 		for (int i = 0; i < width; i++)
-			verticalStrength[i] = HistogramAnalysis.getStrengthV(inputBoolean, 0, i, height);
+			verticalStrength[i] = HistogramAnalysis.getVerticalStrength(inputBoolean, 0, i, height);
 	}
 
 	/**
-	 * The localiseImageByHeight further localises the Image on the candidate
+	 * The localiseImageByHeight further localises the Image
 	 * Vertical dimensions may be changed
-	 * 
-	 * @param imageToBeLocalised
-	 *            the input to be localised
-	 * @param inputBoolean
-	 *            the boolean representation thresholded input image
 	 * @return the localised image
 	 */
 

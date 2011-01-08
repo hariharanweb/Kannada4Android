@@ -79,7 +79,7 @@ public class DownSample {
 		int str = 0;
 		for (int j = 0; j <= Math.ceil(box_width); j++)
 			if ((j + box_y * box_width) < inputBoolean[0].length)
-				str += HistogramAnalysis.getStrengthV(inputBoolean, ((int) Math.floor(box_x * box_height)),
+				str += HistogramAnalysis.getVerticalStrength(inputBoolean, ((int) Math.floor(box_x * box_height)),
 						((int) Math.floor(j + box_y * box_width)), ((int) Math.ceil(box_height)));
 		if (str >= BOX_STRENGTH_NEEDED)
 			return true;

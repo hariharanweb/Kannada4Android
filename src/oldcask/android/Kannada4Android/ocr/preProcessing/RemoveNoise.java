@@ -8,29 +8,13 @@ public class RemoveNoise {
 	private static final double NOISE_SUBTRACT_RATIO_THRESHOLD = 0.60;
 	private RgbImage imageToRemoveNoise;
 
-	/**
-	 * Constructor to initialize the toRemoveNoise object
-	 * 
-	 * @param inp
-	 *            The image for which noise has to be removed
-	 */
 	public RemoveNoise(RgbImage imageToRemoveNoise) {
 		this.imageToRemoveNoise = imageToRemoveNoise;
 	}
 
-	/**
-	 * Removes noise pixels from the input image to a pre-defined extent
-	 * 
-	 * @param imageToRemoveNoise
-	 *            The Image whose noise is to be removed
-	 * 
-	 * @return A noise removed image or the input image as it is depending upon
-	 *         the apparent fruitfulness of the noise removal
-	 */
-
 	public RgbImage doRemoveNoise() {
 //		float[] NoiseKernel = { 0.050f, 0.075f, 0.075f, 0.075f, 0.6f, 0.050f,
-//				0.075f, 0.075f, 0.075f }; ** This kernel gives me an brightened image
+//				0.075f, 0.075f, 0.075f }; ** This kernel gives me a brightened image
 		
 		float[] NoiseKernel = { 0.050f, 0.075f, 0.050f, 0.075f, 0.6f, 0.075f,
 				0.050f, 0.075f, 0.050f };
@@ -41,18 +25,14 @@ public class RemoveNoise {
 		
 		double ratioOfNoiseSubtract = noiseSubtract(imageToRemoveNoise,inputRgbImage);
 
-		System.out.print("Ratio of noise subtract  is " + ratioOfNoiseSubtract);
-
 		if ((ratioOfNoiseSubtract > NOISE_SUBTRACT_RATIO_THRESHOLD)) {
-			System.out.println("Noise NOT Subtrated");
 			return inputRgbImage;
 		} else {
-			System.out.println("Noise Subtrated");
 			return imageToRemoveNoise;
 		}
 	}
 
-	/*
+	/**
 	 * Convolves the Image Based on the Noise Kernel
 	 * 
 	 * @Param noiseKernel The Noise Kernel 
@@ -71,7 +51,6 @@ public class RemoveNoise {
 		colvolutionAlgorithm(noiseKernel, rows, cols, width, height, rgbData,convolved);
 		
 		System.arraycopy(convolved, 0, rgbData, 0, width * height);
-		System.out.println("*************Something happened here in convolve***********\n\n\n");
 	}
 
 	private void colvolutionAlgorithm(float[] noiseKernel, int rows, int cols,
@@ -107,19 +86,19 @@ public class RemoveNoise {
 	 * removal Method sums the difference of corresponding pixels from both
 	 * images
 	 * 
-	 * @param img1
+	 * @param originalImage
 	 *            Original image
 	 * 
-	 * @param img2
+	 * @param noiseRemovedImage
 	 *            Noise removed image
 	 * 
 	 * @return the sum of the difference between corresponding pixels from both
 	 *         images
 	 */
-	private double noiseSubtract(RgbImage img1, RgbImage img2) {
+	private double noiseSubtract(RgbImage originalImage, RgbImage noiseRemovedImage) {
 		int val, count = 0;
-		Bitmap bitmapImg1 = RgbImageAndroid.toBitmap(img1);
-		Bitmap bitmapImg2 = RgbImageAndroid.toBitmap(img2);
+		Bitmap bitmapImg1 = RgbImageAndroid.toBitmap(originalImage);
+		Bitmap bitmapImg2 = RgbImageAndroid.toBitmap(noiseRemovedImage);
 		double area = bitmapImg1.getWidth() * bitmapImg1.getHeight();
 
 		for (int i = 0; i < bitmapImg1.getWidth(); i++) {
