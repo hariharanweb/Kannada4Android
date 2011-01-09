@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="trainingNetwork">Teaching Kannada To your phone.....</string>
-    <string name="ContinueButton">Continue</string>
+    <string name="ContinueButton">Go Ahead.. Take a snap</string>
     <string name="app_name">Kannada4Android</string>
     <string name="Processing">Processing...</string>	
 	<string name="yourResult">Results</string>
