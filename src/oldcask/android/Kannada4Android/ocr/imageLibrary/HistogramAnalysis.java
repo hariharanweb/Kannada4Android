@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr.imagelibrary;
+package oldcask.android.Kannada4Android.ocr.imageLibrary;
 
 public class HistogramAnalysis {
 

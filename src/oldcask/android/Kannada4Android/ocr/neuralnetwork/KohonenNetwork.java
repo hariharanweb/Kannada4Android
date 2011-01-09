@@ -3,7 +3,7 @@ package oldcask.android.Kannada4Android.ocr.neuralnetwork;
 import java.io.Serializable;
 import java.util.List;
 
-import oldcask.android.Kannada4Android.ocr.imagelibrary.Parameters;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 
 /**
  * Java Neural Network Example Handwriting Recognition by Jeff Heaton
