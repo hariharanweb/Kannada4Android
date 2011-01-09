@@ -1,7 +1,7 @@
 package oldcask.android.Kannada4Android;
 
 import android.graphics.Bitmap;
-import oldcask.android.Kannada4Android.ocr.imagelibrary.RgbImageAndroid;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import jjil.core.RgbImage;
 
 public class ProgressResult {

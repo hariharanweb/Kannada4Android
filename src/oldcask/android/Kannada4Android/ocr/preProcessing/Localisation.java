@@ -1,11 +1,11 @@
-package oldcask.android.Kannada4Android.ocr.preprocessing;
+package oldcask.android.Kannada4Android.ocr.preProcessing;
 
 import jjil.algorithm.RgbCrop;
 import jjil.core.Error;
 import jjil.core.RgbImage;
-import oldcask.android.Kannada4Android.ocr.imagelibrary.HistogramAnalysis;
-import oldcask.android.Kannada4Android.ocr.imagelibrary.Parameters;
-import oldcask.android.Kannada4Android.ocr.imagelibrary.Threshold;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
 import android.util.Log;
 
 public class Localisation {
