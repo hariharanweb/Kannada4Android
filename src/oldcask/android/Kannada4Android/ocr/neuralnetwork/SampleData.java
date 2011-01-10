@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr.neuralnetwork;
+package oldcask.android.Kannada4Android.ocr.NeuralNetwork;
 
 /**
  * Java Neural Network Example Handwriting Recognition by Jeff Heaton
@@ -21,6 +21,8 @@ public class SampleData implements Cloneable {
 	 * The characters.
 	 */
 	protected String characters;
+	
+	private String literalTranslation;
 
 	/**
 	 * The constructor
@@ -139,4 +141,17 @@ public class SampleData implements Cloneable {
 		return obj;
 	}
 
+	 /**
+     * @return the literalTranslation
+     */
+    public String getLiteralTranslation() {
+        return literalTranslation;
+    }
+
+    /**
+     * @param literalTranslation the literalTranslation to set
+     */
+    public void setLiteralTranslation(String literalTranslation) {
+        this.literalTranslation = literalTranslation;
+    }
 }

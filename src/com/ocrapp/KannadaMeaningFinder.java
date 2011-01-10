@@ -1,13 +1,14 @@
 package com.ocrapp;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.message.BasicNameValuePair;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 public class KannadaMeaningFinder {
     private static final String kannadaFindUrl = "http://www.kannadakasturi.com/kasturiDictionary/Searchword.asp";
@@ -19,20 +20,32 @@ public class KannadaMeaningFinder {
     }
 
     public String getKannadaMeaning() throws IOException{
-        List<NameValuePair> httpParams = new ArrayList<NameValuePair>(3);
+		HttpService httpService = getKannadaPage();
+		String kannadaWordId = getKannadaWordId(httpService.getContent());
+
+        httpService = getEnglishPage(kannadaWordId);
+        
+        return parseEnglishWord(httpService.getContent());
+    }
+
+	private HttpService getEnglishPage(String kannadaWordId) {
+		HttpService httpService;
+		List<NameValuePair> httpParams = new ArrayList<NameValuePair>(1);
+        httpParams.add(new BasicNameValuePair("kwid", kannadaWordId));
+        
+        httpService = new HttpService(englishMeaningUrl, httpParams, HttpGet.METHOD_NAME, new DefaultHttpClient());
+		return httpService;
+	}
+
+	private HttpService getKannadaPage() {
+		List<NameValuePair> httpParams = new ArrayList<NameValuePair>(3);
         httpParams.add(new BasicNameValuePair("SearchType", "0"));
         httpParams.add(new BasicNameValuePair("submit", "Find"));
         httpParams.add(new BasicNameValuePair("kaword", kannadaText));
 
-        HttpService httpService = new HttpService(kannadaFindUrl, httpParams, HttpPost.METHOD_NAME);
-        String httpContent = httpService.getContent();
-        String kannadaWordId = getKannadaWordId(httpContent);
-
-        httpParams = new ArrayList<NameValuePair>(1);
-        httpParams.add(new BasicNameValuePair("kwid", kannadaWordId));
-        httpService = new HttpService(englishMeaningUrl, httpParams, HttpGet.METHOD_NAME);
-        return parseEnglishWord(httpService.getContent());
-    }
+        HttpService httpService = new HttpService(kannadaFindUrl, httpParams, HttpPost.METHOD_NAME, new DefaultHttpClient());
+		return httpService;
+	}
 
     private String parseEnglishWord(String content) {
         String contentLocation = "class=\"tdformatblack\">";

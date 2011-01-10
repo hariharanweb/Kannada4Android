@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr.neuralnetwork;
+package oldcask.android.Kannada4Android.ocr.NeuralNetwork;
 
 import java.io.Serializable;
 import java.util.List;
@@ -65,7 +65,7 @@ public class KohonenNetwork extends Network implements Serializable {
 	 */
 	protected transient TrainingSet train;
 
-	private String maps[];
+	private OCRCharacter[] ocrCharacter;
 
 	/**
 	 * The constructor.
@@ -414,6 +414,7 @@ public class KohonenNetwork extends Network implements Serializable {
 		double bigerr[] = new double[1];
 		double bigcorr[] = new double[1];
 		KohonenNetwork bestnet; // Preserve best here
+
 		totalError = 1.0;
 
 		for (tset = 0; tset < train.getTrainingSetCount(); tset++) {
@@ -424,6 +425,7 @@ public class KohonenNetwork extends Network implements Serializable {
 			}
 
 		}
+
 		bestnet = new KohonenNetwork(inputNeuronCount, outputNeuronCount);
 
 		won = new int[outputNeuronCount];
@@ -451,6 +453,7 @@ public class KohonenNetwork extends Network implements Serializable {
 				best_err = totalError;
 				copyWeights(bestnet, this);
 			}
+
 			winners = 0;
 			for (i = 0; i < won.length; i++)
 				if (won[i] != 0)
@@ -485,6 +488,7 @@ public class KohonenNetwork extends Network implements Serializable {
 
 			if (rate > 0.01)
 				rate *= reduction;
+
 		}
 
 		// done
@@ -514,17 +518,18 @@ public class KohonenNetwork extends Network implements Serializable {
 			normalizeWeight(optr);
 		}
 	}
-	
-	public String[] mapNeurons(List<SampleData> downSampleDataList) {
-		maps = new String[outputNeuronCount];
+
+	public OCRCharacter[] mapNeurons(List<SampleData> downSampleDataList) {
+		ocrCharacter = new OCRCharacter[outputNeuronCount];
 		double normfac[] = new double[1];
 		double synth[] = new double[1];
 
-		for (int i = 0; i < maps.length; i++) {
-			maps[i] = "?";
+		for (int i = 0; i < outputNeuronCount; i++) {
+			ocrCharacter[i] = new OCRCharacter("?","?");
 		}
 		for (int i = 0; i < outputNeuronCount; i++) {
-			double input[] = new double[Parameters.DOWNSAMPLE_WIDTH * Parameters.DOWNSAMPLE_HEIGHT];
+			double input[] = new double[Parameters.DOWNSAMPLE_WIDTH
+					* Parameters.DOWNSAMPLE_HEIGHT];
 			int idx = 0;
 			SampleData sampleData = (SampleData) downSampleDataList.get(i);
 			for (int y = 0; y < sampleData.getHeight(); y++) {
@@ -534,13 +539,15 @@ public class KohonenNetwork extends Network implements Serializable {
 			}
 
 			int best = winner(input, normfac, synth);
-			maps[best] = sampleData.getCharacters();
+			ocrCharacter[best].setCharacter(sampleData.getCharacters());
+			ocrCharacter[best].setLiteralTranslation(sampleData
+					.getLiteralTranslation());
 		}
-		return maps;
+		return ocrCharacter;
 	}
-	
-	public String[] getMappedNeurons(){
-		return maps;
+
+	public OCRCharacter[] getMappedNeurons() {
+		return ocrCharacter;
 	}
 
 }
