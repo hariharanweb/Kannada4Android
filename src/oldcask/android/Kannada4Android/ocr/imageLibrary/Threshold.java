@@ -31,7 +31,7 @@ public class Threshold {
 
 		RgbImage imageToThreshold = (RgbImage) inputImageToThreshold.clone();
 		Bitmap imageToThresholdBitmap = RgbImageAndroid.toBitmap(
-				imageToThreshold).copy(Bitmap.Config.ARGB_8888, true);
+				imageToThreshold).copy(Bitmap.Config.RGB_565, true);
 
 		int height = imageToThreshold.getHeight();
 		int width = imageToThreshold.getWidth();
