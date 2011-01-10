@@ -4,10 +4,10 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 
 import jjil.core.RgbImage;
+import oldcask.android.Kannada4Android.ocr.NeuralNetwork.KohonenNetwork;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
-import oldcask.android.Kannada4Android.ocr.neuralnetwork.KohonenNetwork;
 import oldcask.android.Kannada4Android.ocr.preProcessing.Localisation;
 import oldcask.android.Kannada4Android.ocr.preProcessing.RemoveNoise;
 import oldcask.android.Kannada4Android.ocr.recognition.Segmentation;

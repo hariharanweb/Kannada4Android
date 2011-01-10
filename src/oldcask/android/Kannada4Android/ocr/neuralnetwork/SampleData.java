@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr.neuralnetwork;
+package oldcask.android.Kannada4Android.ocr.NeuralNetwork;
 
 /**
  * Java Neural Network Example Handwriting Recognition by Jeff Heaton

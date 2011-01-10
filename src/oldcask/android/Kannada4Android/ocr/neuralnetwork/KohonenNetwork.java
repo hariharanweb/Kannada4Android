@@ -1,4 +1,4 @@
-package oldcask.android.Kannada4Android.ocr.neuralnetwork;
+package oldcask.android.Kannada4Android.ocr.NeuralNetwork;
 
 import java.io.Serializable;
 import java.util.List;
