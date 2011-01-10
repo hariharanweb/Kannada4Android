@@ -1,9 +1,9 @@
-package oldcask.android.Kannda4Android.ocr.NeuralNetwork;
+package oldcask.android.Kannada4Android.ocr.NeuralNetwork;
 
 import java.io.Serializable;
 import java.util.List;
 
-import oldcask.android.Kannada4Android.ocr.OpticalCharacterRecognizer;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 
 /**
  * Java Neural Network Example Handwriting Recognition by Jeff Heaton
@@ -63,7 +63,7 @@ public class KohonenNetwork extends Network implements Serializable {
 	/**
 	 * The training set.
 	 */
-	protected TrainingSet train;
+	protected transient TrainingSet train;
 
 	private String maps[];
 
@@ -414,7 +414,6 @@ public class KohonenNetwork extends Network implements Serializable {
 		double bigerr[] = new double[1];
 		double bigcorr[] = new double[1];
 		KohonenNetwork bestnet; // Preserve best here
-		System.out.println("alive till here1");
 		totalError = 1.0;
 
 		for (tset = 0; tset < train.getTrainingSetCount(); tset++) {
@@ -425,7 +424,6 @@ public class KohonenNetwork extends Network implements Serializable {
 			}
 
 		}
-		System.out.println("alive till here2");
 		bestnet = new KohonenNetwork(inputNeuronCount, outputNeuronCount);
 
 		won = new int[outputNeuronCount];
@@ -438,7 +436,6 @@ public class KohonenNetwork extends Network implements Serializable {
 		rate = learnRate;
 
 		initialize();
-		System.out.println("alive till here3");
 		best_err = 1.e30;
 
 		// main loop:
@@ -454,7 +451,6 @@ public class KohonenNetwork extends Network implements Serializable {
 				best_err = totalError;
 				copyWeights(bestnet, this);
 			}
-			System.out.println("alive till here");
 			winners = 0;
 			for (i = 0; i < won.length; i++)
 				if (won[i] != 0)
@@ -489,9 +485,6 @@ public class KohonenNetwork extends Network implements Serializable {
 
 			if (rate > 0.01)
 				rate *= reduction;
-			
-			System.out.println("Alive  "+System.currentTimeMillis());
-
 		}
 
 		// done
@@ -531,7 +524,7 @@ public class KohonenNetwork extends Network implements Serializable {
 			maps[i] = "?";
 		}
 		for (int i = 0; i < outputNeuronCount; i++) {
-			double input[] = new double[OpticalCharacterRecognizer.DOWNSAMPLE_WIDTH * OpticalCharacterRecognizer.DOWNSAMPLE_HEIGHT];
+			double input[] = new double[Parameters.DOWNSAMPLE_WIDTH * Parameters.DOWNSAMPLE_HEIGHT];
 			int idx = 0;
 			SampleData sampleData = (SampleData) downSampleDataList.get(i);
 			for (int y = 0; y < sampleData.getHeight(); y++) {

@@ -1,19 +1,14 @@
 package oldcask.android.Kannada4Android.ocr.preProcessing;
 
-import java.io.File;
-import java.io.PrintStream;
-
-import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
-import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
-
-import android.util.Log;
-
 import jjil.algorithm.RgbCrop;
 import jjil.core.Error;
 import jjil.core.RgbImage;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.HistogramAnalysis;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
+import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
+import android.util.Log;
 
 public class Localisation {
-	private static final int MIN_NUMBER_OF_PIXELS_THRESHOLD = 5;
 	int horizontalStrength[];
 	int verticalStrength[];
 	RgbImage inputImage;
@@ -36,11 +31,11 @@ public class Localisation {
 		horizontalStrength = new int[height];
 		verticalStrength = new int[width];
 		for (int i = 0; i < height; i++) {
-			horizontalStrength[i] = HistogramAnalysis.getStrengthH(inputBoolean, i, 0,
+			horizontalStrength[i] = HistogramAnalysis.getHorizontalStrength(inputBoolean, i, 0,
 					width);
 		}
 		for (int i = 0; i < width; i++)
-			verticalStrength[i] = HistogramAnalysis.getStrengthV(
+			verticalStrength[i] = HistogramAnalysis.getVerticalStrength(
 					inputBoolean, 0, i, height);
 	}
 
@@ -52,41 +47,35 @@ public class Localisation {
 	 */
 
 	public RgbImage localiseImageByWidth() {
-
 		try {
-			int leftEnd = 0, j = 1, rightEnd = width - 1;
+			int leftEnd = findLeftEnd();
+			int rightEnd = findRightEnd();
 
-			leftEnd = findLeftEnd(leftEnd, j);
-
-			rightEnd = findRightEnd(rightEnd);
-
-			System.out.print("\n LEFT END" + leftEnd + " RIGHTEND" + rightEnd
-					+ "HEIGHT" + inputImage.getWidth());
-
-			RgbCrop croppedImage = new RgbCrop(leftEnd, 0,
-					(rightEnd - leftEnd), height - 1);
+			RgbCrop croppedImage = new RgbCrop(leftEnd, 0,(rightEnd - leftEnd), height - 1);
 			croppedImage.push(inputImage);
 			if (!croppedImage.isEmpty())
 				inputImage = (RgbImage) croppedImage.getFront();
+			
 		} catch (Exception e) {
-			Log.e("Localisation", "Error in Localisation " + e);
-			System.out.print(e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Width Localisation " + e);
+			e.printStackTrace();
 		} catch (Error e) {
-			Log.e("Localisation", "Error in Pipeline of RgbCrop " + e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Pipeline of RgbCrop in Localisation By width " + e);
 			e.printStackTrace();
 		}
 
 		refreshData(inputImage, Threshold.thresholdIterative(inputImage));
+		
 		return inputImage;
 	}
 
-	private int findRightEnd(int rightEnd) {
-		int j;
+	private int findRightEnd() {
+		int rightEnd = width-1;
+		int j = width - 1;
 		boolean found = false;
-		j = width - 1;
 		while (!found && j >= 0) {
 			rightEnd = j--;
-			if (verticalStrength[rightEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (verticalStrength[rightEnd] >= Parameters.WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -94,11 +83,13 @@ public class Localisation {
 		return rightEnd;
 	}
 
-	private int findLeftEnd(int leftEnd, int j) {
+	private int findLeftEnd() {
+		int leftEnd = 0;
+		int j = 1;
 		boolean found = false;
 		while (!found && j < width) {
 			leftEnd = j++;
-			if (verticalStrength[leftEnd] >= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (verticalStrength[leftEnd] >= Parameters.WIDTH_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -106,72 +97,54 @@ public class Localisation {
 		return leftEnd;
 	}
 
-	/**
-	 * Once the localiseImageByWidth method is completed, the Image may be
-	 * altered The refresh method refreshes the constructor initiated values It
-	 * alters the parameters width,height & Strength
-	 * 
-	 * @param t
-	 *            the boolean representation of the thresholded version of the
-	 *            image
-	 */
-	private void refreshData(RgbImage inputImage, boolean t[][]) {
+	private void refreshData(RgbImage inputImage, boolean inputBoolean[][]) {
+		this.inputImage = inputImage;
+		this.inputBoolean = inputBoolean;
 		height = inputImage.getHeight();
 		width = inputImage.getWidth();
 		for (int i = 0; i < height; i++) {
-			horizontalStrength[i] = HistogramAnalysis.getStrengthH(t, i, 0, width);
+			horizontalStrength[i] = HistogramAnalysis.getHorizontalStrength(inputBoolean, i, 0, width);
 		}
 		for (int i = 0; i < width; i++)
-			verticalStrength[i] = HistogramAnalysis.getStrengthV(t, 0, i, height);
+			verticalStrength[i] = HistogramAnalysis.getVerticalStrength(inputBoolean, 0, i, height);
 	}
 
 	/**
-	 * The localiseImageByHeight further localises the Image on the candidate
+	 * The localiseImageByHeight further localises the Image
 	 * Vertical dimensions may be changed
-	 * 
-	 * @param imageToBeLocalised
-	 *            the input to be localised
-	 * @param inputBoolean
-	 *            the boolean representation thresholded input image
 	 * @return the localised image
 	 */
 
-	public RgbImage localiseImageByHeight(RgbImage imageToBeLocalised,
-			boolean inputBoolean[][]) {
-		int topEnd = 0,bottomEnd = imageToBeLocalised.getHeight() - 1;
-		refreshData(imageToBeLocalised, inputBoolean);
+	public RgbImage localiseImageByHeight() {
 		try {
-			topEnd = findTopEnd(topEnd);
-
-			bottomEnd = findBottomEnd(bottomEnd);
-
-			System.out.print("\n TOPEND" + topEnd + " BOTTOMEND" + bottomEnd
-					+ "HEIGHT" + imageToBeLocalised.getHeight() + "Width = "
-					+ imageToBeLocalised.getWidth());
+			int topEnd = findTopEnd();
+			int bottomEnd = findBottomEnd();
 
 			RgbCrop croppedImage = new RgbCrop(0, topEnd, width - 1, (bottomEnd	- topEnd));
-			croppedImage.push(imageToBeLocalised);
+			croppedImage.push(inputImage);
 			if (!croppedImage.isEmpty())
-				imageToBeLocalised = (RgbImage) croppedImage.getFront();
+				inputImage = (RgbImage) croppedImage.getFront();
+			
 		} catch (Exception e) {
-			Log.e("Localisation", "Error in Localisation" + e);
-			System.out.print(e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Height Localisation" + e);
+			e.printStackTrace();
 		} catch (Error e) {
-			Log.e("Localisation", "Error in Pipeline of RgbCrop " + e);
+			Log.e(Parameters.TAG_LOCALISATION, "Error in Pipeline of RgbCrop in Localisation By Height " + e);
 			e.printStackTrace();
 		}
-		// Print(Threshold.threshold(imageToBeLocalised, 0.75f, 0.15f));
+		
 		refreshData(inputImage, Threshold.thresholdIterative(inputImage));
-		return imageToBeLocalised;
+		
+		return inputImage;
 	}
 
-	private int findBottomEnd(int bottomEnd) {
+	private int findBottomEnd() {
+		int bottomEnd = height-1;
 		int j =  height/2;
-		boolean found;
-		found = false;
+		boolean found = false;
 		while (!found & j < height) {
 			bottomEnd = j++;
-			if (horizontalStrength[bottomEnd] <= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (horizontalStrength[bottomEnd] <= Parameters.HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -179,12 +152,13 @@ public class Localisation {
 		return bottomEnd;
 	}
 
-	private int findTopEnd(int topEnd) {
+	private int findTopEnd() {
+		int topEnd = 0;
 		boolean found = false;
 		int j = height/2;
 		while (!found & j > 0) {
 			topEnd = j--;
-			if (horizontalStrength[topEnd] <= MIN_NUMBER_OF_PIXELS_THRESHOLD)
+			if (horizontalStrength[topEnd] <= Parameters.HEIGHT_MIN_NUMBER_OF_PIXELS_THRESHOLD)
 				found = true;
 		}
 		if (found == false)
@@ -199,32 +173,14 @@ public class Localisation {
 	 *            the boolean representation of the image to be printed
 	 */
 	public static void Print(boolean inputBoolean[][]) {
-		File f = new File("data/fullimage.txt");
-		try {
-			PrintStream ps = new PrintStream(f);
-
-			for (int i = 0; i < inputBoolean.length/* h */; i++) {
-				for (int j = 0; j < inputBoolean[0].length/* w */; j++) {
-					if (inputBoolean[i][j] == true)
-						ps.print("@");
-					else
-						ps.print(" ");
-				}
-				ps.println("|" + (i));
+		for (int i = 0; i < inputBoolean.length/* h */; i++) {
+			for (int j = 0; j < inputBoolean[0].length/* w */; j++) {
+				if (inputBoolean[i][j] == true)
+					System.out.print("@");
+				else
+					System.out.print(" ");
 			}
-			ps.close();
-
-			for (int i = 0; i < inputBoolean.length/* h */; i++) {
-				for (int j = 0; j < inputBoolean[0].length/* w */; j++) {
-					if (inputBoolean[i][j] == true)
-						System.out.print("@");
-					else
-						System.out.print(" ");
-				}
-				System.out.println("|" + (i));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println("|" + (i));
 		}
 	}
 }

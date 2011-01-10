@@ -1,9 +1,5 @@
 package oldcask.android.Kannada4Android.ocr.imageLibrary;
 
-/**
- * A very basic class to aid in the ananlysis the histogram of a thresholded
- * picture represented as a 2D boolean array
- */
 public class HistogramAnalysis {
 
 	/**
@@ -16,20 +12,20 @@ public class HistogramAnalysis {
 	 *            The initial x position
 	 * 
 	 * @param initial_y
-	 *            The intial y position
+	 *            The initial y position
 	 * 
 	 * @param heightOfLine
 	 *            The height of the line considered
 	 * 
 	 * @return The strength of the line
 	 */
-	public static int getStrengthV(boolean inputBoolean[][], int initial_x, int initial_y, int heightOfLine) {
-		int str = 0;
+	public static int getVerticalStrength(boolean inputBoolean[][], int initial_x, int initial_y, int heightOfLine) {
+		int strength = 0;
 		for (int k = 0; k < heightOfLine; k++) {
 			if (inputBoolean[initial_x + k][initial_y] == true)
-				str++;
+				strength++;
 		}
-		return str;
+		return strength;
 	}
 
 	/**
@@ -39,7 +35,7 @@ public class HistogramAnalysis {
 	 *            The Boolean representation of the image
 	 * 
 	 * @param initial_x
-	 *            The inital x position
+	 *            The initial x position
 	 * 
 	 * @param initial_y
 	 *            The initial y position
@@ -49,12 +45,12 @@ public class HistogramAnalysis {
 	 * 
 	 * @return The strength of the line
 	 */
-	public static int getStrengthH(boolean inputBoolean[][], int initial_x, int initial_y, int widthOfLine) {
-		int str = 0, k;
-		for (k = 0; k < widthOfLine; k++) {
+	public static int getHorizontalStrength(boolean inputBoolean[][], int initial_x, int initial_y, int widthOfLine) {
+		int strength = 0;
+		for (int k = 0; k < widthOfLine; k++) {
 			if (inputBoolean[initial_x][initial_y + k] == true)
-				str++;
+				strength++;
 		}
-		return str;
+		return strength;
 	}
 }
