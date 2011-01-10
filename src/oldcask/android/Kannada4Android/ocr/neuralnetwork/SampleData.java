@@ -21,6 +21,8 @@ public class SampleData implements Cloneable {
 	 * The characters.
 	 */
 	protected String characters;
+	
+	private String literalTranslation;
 
 	/**
 	 * The constructor
@@ -139,4 +141,17 @@ public class SampleData implements Cloneable {
 		return obj;
 	}
 
+	 /**
+     * @return the literalTranslation
+     */
+    public String getLiteralTranslation() {
+        return literalTranslation;
+    }
+
+    /**
+     * @param literalTranslation the literalTranslation to set
+     */
+    public void setLiteralTranslation(String literalTranslation) {
+        this.literalTranslation = literalTranslation;
+    }
 }

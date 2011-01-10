@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 
 import jjil.core.RgbImage;
 import oldcask.android.Kannada4Android.ocr.NeuralNetwork.KohonenNetwork;
+import oldcask.android.Kannada4Android.ocr.NeuralNetwork.OCRCharacter;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Parameters;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.RgbImageAndroid;
 import oldcask.android.Kannada4Android.ocr.imageLibrary.Threshold;
@@ -18,19 +19,21 @@ import android.util.Log;
 
 public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	private KohonenNetwork kohonenNeuralNetwork;
-	private String mappedNeurons[];
-	
+	private OCRCharacter mappedNeurons[];
+
 	@Override
 	public void trainNeuralNetwork(InputStream trainingData) {
 		try {
-			ObjectInputStream objectInputStream = 
-				new ObjectInputStream (trainingData);			
+			ObjectInputStream objectInputStream = new ObjectInputStream(
+					trainingData);
 			Object serializedNeuralNetwork = objectInputStream.readObject();
-			
+
 			kohonenNeuralNetwork = (KohonenNetwork) serializedNeuralNetwork;
 			mappedNeurons = kohonenNeuralNetwork.getMappedNeurons();
 		} catch (Exception e) {
-			Log.e(Parameters.TAG_OCR, "Neural Network Training Error. Check Whether You Have The Proper Serialized Object" + e);
+			Log.e(Parameters.TAG_OCR,
+					"Neural Network Training Error. Check Whether You Have The Proper Serialized Object"
+							+ e);
 			e.printStackTrace();
 		}
 	}
@@ -38,19 +41,17 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 	@Override
 	public OCRResult recogniseImage(RgbImage localisedImage) {
 		try {
-			/*FileInputStream fis = new FileInputStream("data/D.jpg");
-			byte[] jpegData = new byte[1000000];
-			fis.read(jpegData);
-			RgbImage noiseremovedImage = removeNoise(jpegData);
-			RgbImage thresholdImage = thresholdImage(noiseremovedImage);
-			RgbImage localisedImage = localiseImage(thresholdImage);*/
+			/*
+			 * FileInputStream fis = new FileInputStream("data/D.jpg"); byte[]
+			 * jpegData = new byte[1000000]; fis.read(jpegData); RgbImage
+			 * noiseremovedImage = removeNoise(jpegData); RgbImage
+			 * thresholdImage = thresholdImage(noiseremovedImage); RgbImage
+			 * localisedImage = localiseImage(thresholdImage);
+			 */
 
 			SegmentedImageProcessor segmentedImageProcessor = segmentImage(localisedImage);
-			StringBuilder recognisedString = recogniseStrings(segmentedImageProcessor);
-
-			System.out.println(recognisedString.toString());
-			OCRResult ocrResult = new OCRResult(recognisedString.toString(),
-					recognisedString.toString());
+			OCRCharacter recognisedCharacter = recogniseStrings(segmentedImageProcessor);
+			OCRResult ocrResult = new OCRResult(recognisedCharacter.getCharacter(),recognisedCharacter.getLiteralTranslation());
 
 			return ocrResult;
 		} catch (Exception e) {
@@ -60,9 +61,11 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return new OCRResult("", "Sorry!! Somethings gone a bit wrong");
 	}
 
-	private StringBuilder recogniseStrings(SegmentedImageProcessor segmentedImageProcessor) {
-		double input[] = new double[Parameters.DOWNSAMPLE_WIDTH * Parameters.DOWNSAMPLE_HEIGHT];
-		String recognisedStrings[] = new String[Parameters.MAX_CHARACTERS_RECOGNISABLE];
+	private OCRCharacter recogniseStrings(
+			SegmentedImageProcessor segmentedImageProcessor) {
+		double input[] = new double[Parameters.DOWNSAMPLE_WIDTH
+				* Parameters.DOWNSAMPLE_HEIGHT];
+		OCRCharacter ocrCharacters[] = new OCRCharacter[Parameters.MAX_CHARACTERS_RECOGNISABLE];
 		int x;
 		for (x = 0; x < segmentedImageProcessor.getNumberOfValidSegments(); x++) {
 			int idx = 0;
@@ -76,20 +79,28 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 			double normfac[] = new double[1];
 			double synth[] = new double[1];
 			int best = kohonenNeuralNetwork.winner(input, normfac, synth);
-
-			recognisedStrings[x] = mappedNeurons[best];
+			ocrCharacters[x] = new OCRCharacter(
+					mappedNeurons[best].getCharacter(),
+					mappedNeurons[best].getLiteralTranslation());
+			System.out.println("Recognised = "
+					+ mappedNeurons[best].getCharacter() + " Literal ="
+					+ mappedNeurons[best].getLiteralTranslation());
 		}
-		StringBuilder finalRecognisedString = new StringBuilder();
+		StringBuilder recognisedString = new StringBuilder();
+		StringBuilder literalTranslation = new StringBuilder();
 		for (int i = 0; i < x; i++) {
-			finalRecognisedString.append(recognisedStrings[i]);
+			recognisedString.append(ocrCharacters[i].getCharacter());
+			literalTranslation.append(ocrCharacters[i].getLiteralTranslation());
 		}
-
-		return finalRecognisedString;
+		return new OCRCharacter(recognisedString.toString(),
+				literalTranslation.toString());
 	}
 
 	private SegmentedImageProcessor segmentImage(RgbImage localisedImage) {
-		boolean localisedThresholdedBoolean[][] = Threshold.thresholdIterative(localisedImage);
-		RgbImage localisedThresholdedImage = Threshold.makeImage(localisedThresholdedBoolean);
+		boolean localisedThresholdedBoolean[][] = Threshold
+				.thresholdIterative(localisedImage);
+		RgbImage localisedThresholdedImage = Threshold
+				.makeImage(localisedThresholdedBoolean);
 		Segmentation segmenter = new Segmentation(localisedThresholdedImage,
 				localisedThresholdedBoolean);
 
@@ -99,10 +110,12 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 		return segmentedImageProcessor;
 	}
 
-	public RgbImage localiseImage(RgbImage thresholdImage){
-		Localisation actions = new Localisation(thresholdImage,Threshold.thresholdIterative(thresholdImage));
-		/* Doing Localisation By Width, Height and then again Width 
-		 * Removes Some Shadows and Gives Significant improvement in the result
+	public RgbImage localiseImage(RgbImage thresholdImage) {
+		Localisation actions = new Localisation(thresholdImage,
+				Threshold.thresholdIterative(thresholdImage));
+		/*
+		 * Doing Localisation By Width, Height and then again Width Removes Some
+		 * Shadows and Gives Significant improvement in the result
 		 */
 		RgbImage localisedImage = actions.localiseImageByWidth();
 		localisedImage = actions.localiseImageByHeight();
@@ -118,9 +131,9 @@ public class OpticalCharacterRecognizer implements IOpticalCharacterRecognizer {
 
 	public RgbImage removeNoise(byte[] jpegData) {
 		Options options = new BitmapFactory.Options();
-		options.inSampleSize = 4 ;
+		options.inSampleSize = 4;
 		RgbImage inputImage = RgbImageAndroid.toRgbImage(BitmapFactory
-				.decodeByteArray(jpegData, 0, jpegData.length,options));
+				.decodeByteArray(jpegData, 0, jpegData.length, options));
 		RemoveNoise removeNoise = new RemoveNoise(inputImage);
 		RgbImage noiseremovedImage = removeNoise.doRemoveNoise();
 		return noiseremovedImage;
