@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent" android:background="@drawable/kan4android">
+	android:layout_height="fill_parent" android:background="@drawable/background">
 
 	<TextView android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:text="@string/trainingNetwork" android:id="@+id/TrainingText" android:textSize="20sp" android:textColor="#ffcc66"/>
+		android:layout_height="wrap_content" android:text="@string/trainingNetwork" android:id="@+id/TrainingText" android:textSize="20sp" android:textColor="#000000"/>
 
 	<Button android:text="@string/ContinueButton" android:id="@+id/ContinueButton"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
