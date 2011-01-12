@@ -50,7 +50,7 @@ public class ResultActivity extends Activity implements
 	private final class SpeakOutClickListener implements View.OnClickListener {
 		public void onClick(View v) {
 			TextView literalTranslation = (TextView) findViewById(R.id.translation);
-			textToSpeech.speak("hello world",
+			textToSpeech.speak(literalTranslation.getText().toString(),
 					TextToSpeech.QUEUE_ADD, null);
 		}
 	}
