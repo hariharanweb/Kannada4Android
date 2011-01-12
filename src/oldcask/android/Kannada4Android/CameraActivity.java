@@ -55,7 +55,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 		Parameters cameraParameters = camera.getParameters();
 		cameraParameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
 		cameraParameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
-		cameraParameters.setPictureSize(320, 240);
+		cameraParameters.setPictureSize(480, 240);
 		camera.setParameters(cameraParameters);
 		try {
 			camera.setPreviewDisplay(holder);
