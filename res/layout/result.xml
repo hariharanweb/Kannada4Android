@@ -10,7 +10,7 @@
 	<TextView android:id="@+id/translation" android:layout_width="wrap_content"
 		android:layout_height="wrap_content"></TextView>
 
-	<Button android:text="@string/SpeakOut" android:id="@+id/SpeakOut"
+	<Button android:id="@+id/SpeakOut" android:background="@drawable/sound"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:visibility="invisible"></Button>
 
