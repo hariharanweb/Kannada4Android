@@ -8,5 +8,7 @@
 	<string name="inKannada">In Kannada</string>
 	<string name="literalTranslation">Literal Translation</string>
 	<string name="SpeakOut">Speak Out</string>
-<string name="WebSiteLink">Visit us at kannada4android.appspot.com</string>
+	<string name="WebSiteLink">Visit us at kannada4android.appspot.com</string>
+	<string name="MeaningFinder">Meaning on net</string>
+
 </resources>

@@ -3,6 +3,7 @@ package org.oldcask.kannada4android.activity;
 import java.util.Locale;
 
 import org.oldcask.kannada4android.ocr.OCRResult;
+import org.oldcask.kannada4android.processing.MeaningButtonClickListener;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,11 +27,23 @@ public class ResultActivity extends Activity implements
 		setContentView(R.layout.result);
 		OCRResult result = getData();
 		showResult(result);
+		initTextToSpeech();
+		initWebSiteLink();
+
+		Button meaningButton = (Button) findViewById(R.id.MeaningFinderButton);
+		TextView literalTranslation = (TextView) findViewById(R.id.translation);
+		meaningButton.setOnClickListener(new MeaningButtonClickListener(this,literalTranslation));
+	}
+
+	private void initWebSiteLink() {
+		TextView webSiteLink = (TextView) findViewById(R.id.WebSiteLink);
+		Linkify.addLinks(webSiteLink, Linkify.WEB_URLS);
+	}
+
+	private void initTextToSpeech() {
 		speakButton = (Button) findViewById(R.id.SpeakOut);
 		textToSpeech = new TextToSpeech(this, this);
 		speakButton.setOnClickListener(new SpeakOutClickListener());
-		TextView webSiteLink = (TextView) findViewById(R.id.WebSiteLink);
-		Linkify.addLinks(webSiteLink, Linkify.WEB_URLS);
 	}
 
 	private OCRResult getData() {
@@ -72,5 +85,11 @@ public class ResultActivity extends Activity implements
 			textToSpeech.shutdown();
 		}
 		super.onDestroy();
+	}
+
+	public void showMeaning(String result) {
+		TextView meaningText = (TextView) findViewById(R.id.MeaningText);
+		meaningText.setVisibility(View.VISIBLE);
+		meaningText.setText(result);
 	}
 }

@@ -22,6 +22,14 @@
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:textSize="30sp"></TextView>
 
+	<Button android:id="@+id/MeaningFinderButton" android:text="@string/MeaningFinder"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:visibility="invisible"></Button>
+
+	<TextView android:id="@+id/MeaningText" android:layout_width="wrap_content"
+		android:layout_height="wrap_content" android:visibility="invisible"></TextView>
+
 	<TextView android:text="@string/WebSiteLink" android:id="@+id/WebSiteLink"
-		android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ffcc66"></TextView>
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		android:textColor="#ffcc66"></TextView>
+		
 </LinearLayout>
