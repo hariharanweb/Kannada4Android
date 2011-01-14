@@ -22,6 +22,6 @@
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
 		android:textSize="30sp"></TextView>
 
-
-
+	<TextView android:text="@string/WebSiteLink" android:id="@+id/WebSiteLink"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#ffcc66"></TextView>
 </LinearLayout>

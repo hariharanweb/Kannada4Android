@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.text.util.Linkify;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -28,6 +29,8 @@ public class ResultActivity extends Activity implements
 		speakButton = (Button) findViewById(R.id.SpeakOut);
 		textToSpeech = new TextToSpeech(this, this);
 		speakButton.setOnClickListener(new SpeakOutClickListener());
+		TextView webSiteLink = (TextView) findViewById(R.id.WebSiteLink);
+		Linkify.addLinks(webSiteLink, Linkify.WEB_URLS);
 	}
 
 	private OCRResult getData() {
