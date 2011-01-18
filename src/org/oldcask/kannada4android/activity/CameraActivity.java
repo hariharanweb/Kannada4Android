@@ -1,6 +1,7 @@
 package org.oldcask.kannada4android.activity;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
+import android.hardware.Camera.Size;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -44,7 +46,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 		camera.startPreview();
 		camera.autoFocus(new Camera.AutoFocusCallback() {
 			public void onAutoFocus(boolean success, Camera camera) {
-				//do nothing
+				// do nothing
 			}
 		});
 	}
@@ -55,7 +57,8 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 		Parameters cameraParameters = camera.getParameters();
 		cameraParameters.setFocusMode(Parameters.FOCUS_MODE_AUTO);
 		cameraParameters.setFlashMode(Parameters.FLASH_MODE_AUTO);
-		cameraParameters.setPictureSize(480, 240);
+		Size minimumSize = getMinimumCameraSize(cameraParameters);
+		cameraParameters.setPictureSize(minimumSize.width,minimumSize.height);
 		camera.setParameters(cameraParameters);
 		try {
 			camera.setPreviewDisplay(holder);
@@ -63,6 +66,25 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 			Log.e(LOG_TAG, "Somethings gone a bit wrong..." + e);
 		}
 
+	}
+
+	private Size getMinimumCameraSize(Parameters cameraParameters) {
+		List<Size> supportedPictureSizes = cameraParameters
+				.getSupportedPictureSizes();
+		Size minimumSize = supportedPictureSizes.get(0);
+		long minimumTotalSize = minimumSize.width * minimumSize.height;
+
+		for (int i = 1; i < supportedPictureSizes.size(); i++) {
+			Size size = supportedPictureSizes.get(i);
+			int width = size.width;
+			int height = size.height;
+			int totalPixels = width * height;
+			if (totalPixels > 15200 && totalPixels < minimumTotalSize) {
+				minimumSize = size;
+				minimumTotalSize = totalPixels;
+			}
+		}
+		return minimumSize;
 	}
 
 	@Override
@@ -85,10 +107,11 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 		public void onPictureTaken(byte[] data, Camera camera) {
 			Bundle bundle = new Bundle();
 			bundle.putByteArray(PIC_DATA, data);
-			
-			Intent resultIntent = new Intent(getBaseContext(), ProcessingActivity.class);
+
+			Intent resultIntent = new Intent(getBaseContext(),
+					ProcessingActivity.class);
 			resultIntent.putExtras(bundle);
-			
+
 			startActivity(resultIntent);
 		}
 	}
