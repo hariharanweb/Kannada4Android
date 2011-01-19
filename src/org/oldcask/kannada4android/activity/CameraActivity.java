@@ -43,12 +43,7 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		camera.startPreview();
-		camera.autoFocus(new Camera.AutoFocusCallback() {
-			public void onAutoFocus(boolean success, Camera camera) {
-				// do nothing
-			}
-		});
+		camera.startPreview();		
 	}
 
 	@Override
@@ -100,7 +95,11 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 		private PictureCallback jpegCallback = new JPEGImageCallbackListener();
 
 		public void onClick(View v) {
-			camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+			camera.autoFocus(new Camera.AutoFocusCallback() {
+				public void onAutoFocus(boolean success, Camera camera) {
+					camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+				}
+			});
 		}
 	}
 
