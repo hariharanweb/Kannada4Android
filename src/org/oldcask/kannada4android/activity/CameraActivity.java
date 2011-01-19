@@ -78,12 +78,14 @@ public class CameraActivity extends Activity implements SurfaceHolder.Callback {
 			Size size = supportedPictureSizes.get(i);
 			int width = size.width;
 			int height = size.height;
+			Log.d("KANNADA4ANDROID", "Available size:"+width+" "+height);
 			int totalPixels = width * height;
-			if (totalPixels > 15200 && totalPixels < minimumTotalSize) {
+			if (totalPixels > 115200 && totalPixels < minimumTotalSize) {
 				minimumSize = size;
 				minimumTotalSize = totalPixels;
 			}
 		}
+		Log.d("KANNADA4ANDROID", "Camera resolution choosen:"+minimumSize.width+" "+minimumSize.height);
 		return minimumSize;
 	}
 
