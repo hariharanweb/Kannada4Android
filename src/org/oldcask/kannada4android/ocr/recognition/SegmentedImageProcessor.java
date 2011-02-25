@@ -44,19 +44,26 @@ public class SegmentedImageProcessor {
 
 		RgbImage thinnedImage = segmentThinner.thinningHilditch(tempBoolean, tempBoolean[0].length,
 				tempBoolean.length, Parameters.LAYERS_TO_THIN);
-
+		RgbImage localisedImage;
+		
 		if (thinnedImage != null) {
 			tempBoolean = new boolean[thinnedImage.getHeight()][thinnedImage.getWidth()];
 			tempBoolean = Threshold.thresholdIterative(thinnedImage);
+			
+			Localisation localisation = new Localisation(thinnedImage, tempBoolean);
+			localisedImage = localisation.localiseImageByWidth();
+			localisedImage = localisation.localiseImageByHeight();
+			tempBoolean = new boolean[localisedImage.getHeight()][localisedImage.getWidth()];
+			tempBoolean = Threshold.thresholdIterative(localisedImage);
 			Localisation.Print(tempBoolean);
-
-			thinnedSegmentsList.add(thinnedImage);
+			
+			thinnedSegmentsList.add(localisedImage);
 		} else {
 			segmentsList.remove(validSegments);
 			return;
 		}
 		downSampler[validSegments] = new DownSample();
-		downSampler[validSegments].downSample(thinnedImage, tempBoolean);
+		downSampler[validSegments].downSample(localisedImage, tempBoolean);
 		validSegments++;
 	}
 	/**

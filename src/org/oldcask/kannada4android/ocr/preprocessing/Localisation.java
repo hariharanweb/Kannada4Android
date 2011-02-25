@@ -52,7 +52,7 @@ public class Localisation {
 			int leftEnd = findLeftEnd();
 			int rightEnd = findRightEnd();
 
-			RgbCrop croppedImage = new RgbCrop(leftEnd, 0,(rightEnd - leftEnd), height - 1);
+			RgbCrop croppedImage = new RgbCrop(leftEnd, 0,(rightEnd - leftEnd + 1), height);
 			croppedImage.push(inputImage);
 			if (!croppedImage.isEmpty())
 				inputImage = (RgbImage) croppedImage.getFront();
@@ -86,7 +86,7 @@ public class Localisation {
 
 	private int findLeftEnd() {
 		int leftEnd = 0;
-		int j = 1;
+		int j = 0;
 		boolean found = false;
 		while (!found && j < width) {
 			leftEnd = j++;
@@ -121,7 +121,7 @@ public class Localisation {
 			int topEnd = findTopEnd();
 			int bottomEnd = findBottomEnd();
 
-			RgbCrop croppedImage = new RgbCrop(0, topEnd, width - 1, (bottomEnd	- topEnd));
+			RgbCrop croppedImage = new RgbCrop(0, topEnd, width, (bottomEnd	- topEnd + 1));
 			croppedImage.push(inputImage);
 			if (!croppedImage.isEmpty())
 				inputImage = (RgbImage) croppedImage.getFront();
